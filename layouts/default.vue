@@ -3,13 +3,19 @@
         <div :class="$style.inner">
             <div :class="$style.header">
                 <div :class="$style.left">
-                    <div :class="$style.logo" />
+                    <NuxtLink to="/">
+                        <div :class="$style.logo" />
+                    </NuxtLink>
                     <div :class="$style.search">
-                        <el-input />
+                        <el-input
+                            v-model="search"
+                            :prefix-icon="Search"
+                            placeholder="찾기"
+                        />
                     </div>
                 </div>
                 <div :class="$style.right">
-                    <div :class="$style.user"></div>
+                    <div @click="goLogin" :class="$style.user" />
                 </div>
             </div>
             <div :class="$style.body">
@@ -25,9 +31,18 @@
     </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Search } from "@element-plus/icons-vue";
+
+const search: Ref<string> = ref("");
+
+const goLogin = () => {
+    navigateTo("/login");
+};
+</script>
 
 <style lang="scss" module>
+@import "@/assets/css/utils.scss";
 .index {
     width: 100%;
     height: 100%;
@@ -45,23 +60,31 @@
             width: 100%;
             min-height: 40px;
 
+            padding-top: 10px;
+
             display: flex;
             justify-content: space-between;
 
             > .left {
+                padding-left: 20px;
+
                 display: flex;
                 align-items: center;
                 gap: 10px;
 
-                padding-left: 40px;
-
                 flex-basis: 50%;
 
-                > .logo {
-                    width: 30px;
-                    height: 30px;
+                > a {
+                    text-decoration: none;
 
-                    flex-shrink: 0;
+                    > .logo {
+                        width: 30px;
+                        height: 30px;
+
+                        flex-shrink: 0;
+
+                        @include icon-image("home.svg");
+                    }
                 }
 
                 > .search {
@@ -71,7 +94,25 @@
             }
 
             > .right {
+                padding-right: 20px;
+
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 10px;
+
                 flex-basis: 50%;
+
+                > .user {
+                    width: 30px;
+                    height: 30px;
+
+                    flex-shrink: 0;
+
+                    cursor: pointer;
+
+                    @include icon-image("user-solid.svg");
+                }
             }
         }
 
