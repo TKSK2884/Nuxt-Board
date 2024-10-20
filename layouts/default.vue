@@ -37,7 +37,7 @@ import { Search } from "@element-plus/icons-vue";
 const search: Ref<string> = ref("");
 
 const goLogin = () => {
-    navigateTo("/login");
+    navigateTo("/auth/login");
 };
 </script>
 
@@ -60,7 +60,7 @@ const goLogin = () => {
             width: 100%;
             min-height: 40px;
 
-            padding-top: 10px;
+            padding-block: 10px;
 
             display: flex;
             justify-content: space-between;
@@ -123,6 +123,8 @@ const goLogin = () => {
             > .contents {
                 max-width: 1024px;
                 height: 100%;
+
+                margin-inline: auto;
             }
 
             > banner {
