@@ -2,20 +2,22 @@
     <div :class="$style.index">
         <div :class="$style.inner">
             <div :class="$style.header">
-                <div :class="$style.left">
-                    <NuxtLink to="/">
-                        <div :class="$style.logo" />
-                    </NuxtLink>
-                    <div :class="$style.search">
-                        <el-input
-                            v-model="search"
-                            :prefix-icon="Search"
-                            placeholder="찾기"
-                        />
+                <div :class="$style.cover">
+                    <div :class="$style.left">
+                        <NuxtLink to="/">
+                            <div :class="$style.logo" />
+                        </NuxtLink>
+                        <div :class="$style.search">
+                            <el-input
+                                v-model="search"
+                                :prefix-icon="Search"
+                                placeholder="찾기"
+                            />
+                        </div>
                     </div>
-                </div>
-                <div :class="$style.right">
-                    <div @click="goLogin" :class="$style.user" />
+                    <div :class="$style.right">
+                        <div @click="goLogin" :class="$style.user" />
+                    </div>
                 </div>
             </div>
             <div :class="$style.body">
@@ -61,57 +63,69 @@ const goLogin = () => {
             min-height: 40px;
 
             padding-block: 10px;
+            margin-bottom: 10px;
 
-            display: flex;
-            justify-content: space-between;
+            background-color: #3d414d;
 
-            > .left {
-                padding-left: 20px;
+            > .cover {
+                width: 100%;
+                height: 100%;
+
+                max-width: 1200px;
+
+                margin-inline: auto;
 
                 display: flex;
-                align-items: center;
-                gap: 10px;
+                justify-content: space-between;
 
-                flex-basis: 50%;
+                > .left {
+                    padding-left: 20px;
 
-                > a {
-                    text-decoration: none;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
 
-                    > .logo {
+                    flex-basis: 50%;
+
+                    > a {
+                        text-decoration: none;
+
+                        > .logo {
+                            width: 30px;
+                            height: 30px;
+
+                            flex-shrink: 0;
+
+                            @include icon-image("home.svg");
+                        }
+                    }
+
+                    > .search {
+                        width: 100%;
+                        max-width: 300px;
+                    }
+                }
+
+                > .right {
+                    padding-right: 20px;
+
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    gap: 10px;
+
+                    flex-basis: 50%;
+
+                    > .user {
                         width: 30px;
                         height: 30px;
 
                         flex-shrink: 0;
 
-                        @include icon-image("home.svg");
+                        cursor: pointer;
+
+                        @include icon-image("user-solid-white.svg");
                     }
-                }
-
-                > .search {
-                    width: 100%;
-                    max-width: 300px;
-                }
-            }
-
-            > .right {
-                padding-right: 20px;
-
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-                gap: 10px;
-
-                flex-basis: 50%;
-
-                > .user {
-                    width: 30px;
-                    height: 30px;
-
-                    flex-shrink: 0;
-
-                    cursor: pointer;
-
-                    @include icon-image("user-solid.svg");
                 }
             }
         }
