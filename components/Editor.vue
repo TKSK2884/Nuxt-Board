@@ -4,101 +4,141 @@
             <el-input v-model="title" :class="$style.title" />
             <div v-if="editor" :class="$style.container">
                 <div :class="$style.control">
-                    <el-tooltip
-                        :class="$style.tooltip"
-                        content="굵게"
-                        placement="bottom-start"
-                    >
-                        <el-button
-                            @click="editor.chain().focus().toggleBold().run()"
-                            :class="[
-                                $style.bold,
-                                $style.button,
-                                { 'is-active': editor.isActive('bold') },
-                            ]"
-                        />
-                    </el-tooltip>
-                    <el-tooltip
-                        :class="$style.tooltip"
-                        content="기울임꼴"
-                        placement="bottom-start"
-                    >
-                        <el-button
-                            :class="[
-                                $style.italic,
-                                $style.button,
-                                { 'is-active': editor.isActive('italic') },
-                            ]"
-                            @click="editor.chain().focus().toggleItalic().run()"
-                        />
-                    </el-tooltip>
-                    <el-tooltip
-                        :class="$style.tooltip"
-                        content="취소선"
-                        placement="bottom-start"
-                    >
-                        <el-button
-                            :class="[
-                                $style.slash,
-                                $style.button,
-                                { 'is-active': editor.isActive('strike') },
-                            ]"
-                            @click="editor.chain().focus().toggleStrike().run()"
-                        />
-                    </el-tooltip>
-                    <el-tooltip
-                        :class="$style.tooltip"
-                        content="폰트 크기"
-                        placement="bottom-start"
-                    >
-                        <el-dropdown trigger="click">
-                            <el-button :class="[$style.size, $style.button]" />
-                            <template #dropdown>
-                                <el-scrollbar height="300px">
-                                    <el-dropdown-menu>
-                                        <el-dropdown-item
-                                            v-for="(font, index) in fontSizes"
-                                            :key="'font-' + index"
-                                            @click="setFontSize(`${font}px`)"
-                                            >{{ font }}
-                                        </el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </el-scrollbar>
-                            </template>
-                        </el-dropdown>
-                    </el-tooltip>
+                    <div :class="$style.left">
+                        <el-tooltip
+                            :class="$style.tooltip"
+                            content="굵게"
+                            placement="bottom-start"
+                        >
+                            <el-button
+                                @click="
+                                    editor.chain().focus().toggleBold().run()
+                                "
+                                :class="[
+                                    $style.bold,
+                                    $style.button,
+                                    { 'is-active': editor.isActive('bold') },
+                                ]"
+                            />
+                        </el-tooltip>
+                        <el-tooltip
+                            :class="$style.tooltip"
+                            content="기울임꼴"
+                            placement="bottom-start"
+                        >
+                            <el-button
+                                :class="[
+                                    $style.italic,
+                                    $style.button,
+                                    { 'is-active': editor.isActive('italic') },
+                                ]"
+                                @click="
+                                    editor.chain().focus().toggleItalic().run()
+                                "
+                            />
+                        </el-tooltip>
+                        <el-tooltip
+                            :class="$style.tooltip"
+                            content="밑줄"
+                            placement="bottom-start"
+                        >
+                            <el-button
+                                :class="[
+                                    $style.underline,
+                                    $style.button,
+                                    {
+                                        'is-active':
+                                            editor.isActive('underline'),
+                                    },
+                                ]"
+                                @click="
+                                    editor
+                                        .chain()
+                                        .focus()
+                                        .toggleUnderline()
+                                        .run()
+                                "
+                            />
+                        </el-tooltip>
 
-                    <el-button
-                        @click="changeExtend()"
-                        :class="[
-                            $style.enableExtend,
-                            $style.button,
-                            { 'is-active': extend },
-                        ]"
-                    >
-                        문단 서식
-                    </el-button>
+                        <el-tooltip
+                            :class="$style.tooltip"
+                            content="취소선"
+                            placement="bottom-start"
+                        >
+                            <el-button
+                                :class="[
+                                    $style.slash,
+                                    $style.button,
+                                    { 'is-active': editor.isActive('strike') },
+                                ]"
+                                @click="
+                                    editor.chain().focus().toggleStrike().run()
+                                "
+                            />
+                        </el-tooltip>
+                        <el-tooltip
+                            :class="$style.tooltip"
+                            content="폰트 크기"
+                            placement="bottom-start"
+                        >
+                            <el-dropdown trigger="click">
+                                <el-button
+                                    :class="[$style.size, $style.button]"
+                                />
+                                <template #dropdown>
+                                    <el-scrollbar height="300px">
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item
+                                                v-for="(
+                                                    font, index
+                                                ) in fontSizes"
+                                                :key="'font-' + index"
+                                                @click="
+                                                    setFontSize(`${font}px`)
+                                                "
+                                                >{{ font }}
+                                            </el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </el-scrollbar>
+                                </template>
+                            </el-dropdown>
+                        </el-tooltip>
 
-                    <el-tooltip
-                        :class="$style.tooltip"
-                        content="실행취소"
-                        placement="bottom-start"
-                    >
                         <el-button
-                            :class="[$style.undo, $style.button]"
-                            @click="editor.chain().focus().undo().run()"
-                        />
-                    </el-tooltip>
-                    <el-tooltip
-                        :class="$style.tooltip"
-                        content="되돌리기"
-                        placement="bottom-start"
-                    >
-                        <el-button
-                            :class="[$style.redo, $style.button]"
-                            @click="editor.chain().focus().redo().run()"
-                        />
-                    </el-tooltip>
+                            @click="changeExtend()"
+                            :class="[
+                                $style.enableExtend,
+                                $style.button,
+                                { 'is-active': extend },
+                            ]"
+                        >
+                            문단 서식
+                        </el-button>
+                    </div>
+
+                    <div :class="$style.right">
+                        <el-tooltip
+                            :class="$style.tooltip"
+                            content="실행취소"
+                            placement="bottom-start"
+                        >
+                            <el-button
+                                :class="[$style.undo, $style.button]"
+                                @click="editor.chain().focus().undo().run()"
+                            />
+                        </el-tooltip>
+                        <el-tooltip
+                            :class="$style.tooltip"
+                            content="되돌리기"
+                            placement="bottom-start"
+                        >
+                            <el-button
+                                :class="[$style.redo, $style.button]"
+                                @click="editor.chain().focus().redo().run()"
+                            />
+                        </el-tooltip>
+                    </div>
                 </div>
                 <Transition name="fade">
                     <div v-if="extend" :class="$style.extend">
@@ -209,9 +249,7 @@
                                     },
                                 ]"
                                 @click="editor.commands.indent()"
-                            >
-                                들여쓰기
-                            </el-button>
+                            />
                         </el-tooltip>
 
                         <el-tooltip
@@ -228,29 +266,17 @@
                                     },
                                 ]"
                                 @click="editor.commands.outdent()"
-                            >
-                                내어쓰기
-                            </el-button>
+                            />
                         </el-tooltip>
 
-                        <el-tooltip
-                            :class="$style.tooltip"
-                            content="수평선 삽입"
-                            placement="bottom-start"
+                        <el-button
+                            @click="
+                                editor.chain().focus().setHorizontalRule().run()
+                            "
+                            :class="$style.horizon"
                         >
-                            <el-button
-                                @click="
-                                    editor
-                                        .chain()
-                                        .focus()
-                                        .setHorizontalRule()
-                                        .run()
-                                "
-                                :class="$style.horizon"
-                            >
-                                수평선 삽입
-                            </el-button>
-                        </el-tooltip>
+                            수평선 삽입
+                        </el-button>
                     </div>
                 </Transition>
 
@@ -272,6 +298,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import TextAlign from "@tiptap/extension-text-align";
 import FontSize from "~/extensions/Fontsize";
 import { Indent } from "~/extensions/indent";
+import Underline from "@tiptap/extension-underline";
 
 const editor: Ref<Editor | undefined> = ref(undefined);
 const model: Ref<string | undefined> = defineModel({
@@ -316,6 +343,7 @@ onMounted(async () => {
                 minLevel: 0,
                 maxLevel: 8,
             }),
+            Underline,
         ],
         content: model.value,
     });
@@ -373,39 +401,53 @@ const changeExtend = (): void => {
             }
 
             > .control {
-                padding: 10px;
+                padding: 8px;
 
                 // background-color: #43494c;
                 display: flex;
-                gap: 4px;
+                justify-content: space-between;
 
                 border-top-left-radius: 10px;
                 border-top-right-radius: 10px;
 
-                > .bold {
-                    @include icon-image("bold-solid.svg");
-                }
+                > .left {
+                    display: flex;
+                    gap: 4px;
 
-                > .italic {
-                    @include icon-image("italic-solid.svg");
-                }
+                    > .bold {
+                        @include icon-image("bold-solid.svg");
+                    }
 
-                > :global(.el-dropdown) {
-                    > .size {
-                        @include icon-image("text-height-solid.svg");
+                    > .italic {
+                        @include icon-image("italic-solid.svg");
+                    }
+
+                    > :global(.el-dropdown) {
+                        > .size {
+                            @include icon-image("text-height-solid.svg");
+                        }
+                    }
+
+                    > .underline {
+                        @include icon-image("underline-solid.svg");
+                    }
+
+                    > .slash {
+                        @include icon-image("text-slash-solid.svg");
                     }
                 }
 
-                > .slash {
-                    @include icon-image("text-slash-solid.svg");
-                }
+                > .right {
+                    display: flex;
+                    gap: 4px;
 
-                > .undo {
-                    @include icon-image("undo-arrow.svg");
-                }
+                    > .undo {
+                        @include icon-image("undo-arrow.svg");
+                    }
 
-                > .redo {
-                    @include icon-image("redo-arrow.svg");
+                    > .redo {
+                        @include icon-image("redo-arrow.svg");
+                    }
                 }
 
                 .button {
@@ -423,14 +465,14 @@ const changeExtend = (): void => {
                 }
 
                 > .enableExtend:global(.is-active) {
-                    transform: translateY(3px);
+                    transform: translateY(8px);
                     transition-duration: 0.5s;
                 }
             }
             > .extend {
                 background-color: #f5f5f5;
 
-                padding: 10px;
+                padding: 8px;
                 display: flex;
                 gap: 4px;
 
@@ -454,6 +496,14 @@ const changeExtend = (): void => {
                     @include icon-image("list-ul-solid.svg");
                 }
 
+                > .indent {
+                    @include icon-image("indent-solid.svg");
+                }
+
+                > .outdent {
+                    @include icon-image("outdent-solid.svg");
+                }
+
                 > .button:hover {
                     background-color: #ebebeb;
                     border-color: #ebebeb;
@@ -470,6 +520,10 @@ const changeExtend = (): void => {
                 padding: 10px;
 
                 border-top: 1px solid #bbb;
+
+                > div > div:global(.tiptap) {
+                    outline: none;
+                }
 
                 @for $i from 1 through 8 {
                     [data-indent="#{$i}"] {
