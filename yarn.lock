@@ -1402,6 +1402,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-text/-/extension-text-2.8.0.tgz#d24d9e627a595aa87585d885f8ee3cd2a959d787"
   integrity sha512-EDAdFFzWOvQfVy7j3qkKhBpOeE5thkJaBemSWfXI93/gMVc0ZCdLi24mDvNNgUHlT+RjlIoQq908jZaaxLKN2A==
 
+"@tiptap/extension-underline@^2.9.0":
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-underline/-/extension-underline-2.9.0.tgz#2bd32a0b1df0d749d0e52fc8639e3230820a6ee0"
+  integrity sha512-EgmVHsXrO+wLHjT9SstTLHhfNXuqP7V2PFKTkG/OsooFwStio6E88PfytBJH9f+5v3iryn+QfCqBxq1Qd4lfxQ==
+
 "@tiptap/pm@^2.8.0":
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-2.8.0.tgz#c79ad5e0f4a00cf306f15ac4497bf2fb0a40c784"
