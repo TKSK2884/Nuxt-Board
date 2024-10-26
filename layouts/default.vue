@@ -16,6 +16,9 @@
                         </div>
                     </div>
                     <div :class="$style.right">
+                        <div :class="$style.nickname">
+                            {{ authStore.userState?.nickname }}
+                        </div>
                         <div @click="goLogin" :class="$style.user" />
                     </div>
                 </div>
@@ -29,18 +32,40 @@
             <div :class="$style.footer">
                 <div>Copyright(c) by 조현석</div>
             </div>
+
+            <div v-if="loadingStore.globalLoading" :class="$style.loading">
+                <LoadingIndicator />
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { Search } from "@element-plus/icons-vue";
+import { useAuthStore } from "~/stores/auth";
+import { useLoadingStore } from "~/stores/loading";
+
+const loadingStore = useLoadingStore();
+const authStore = useAuthStore();
 
 const search: Ref<string> = ref("");
 
 const goLogin = () => {
+    if (useAuthStore().userState != null) {
+        useAuthStore().logout();
+        return;
+    }
+
     navigateTo("/auth/login");
 };
+
+onMounted(async () => {
+    loadingStore.globalLoading = true;
+
+    await useAuthStore().checkAuth();
+
+    loadingStore.globalLoading = false;
+});
 </script>
 
 <style lang="scss" module>
@@ -116,6 +141,10 @@ const goLogin = () => {
 
                     flex-basis: 50%;
 
+                    > .nickname {
+                        color: white;
+                    }
+
                     > .user {
                         width: 30px;
                         height: 30px;
@@ -138,6 +167,7 @@ const goLogin = () => {
                 max-width: 1024px;
                 height: 100%;
 
+                padding-inline: 20px;
                 margin-inline: auto;
             }
 
@@ -155,6 +185,19 @@ const goLogin = () => {
 
             position: absolute;
             bottom: 0px;
+        }
+
+        > .loading {
+            width: 100%;
+            height: 100%;
+
+            position: absolute;
+            top: 0px;
+            left: 0px;
+
+            background-color: white;
+
+            opacity: 80%;
         }
     }
 }
