@@ -26,6 +26,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from "~/stores/auth";
+
 const config = useRuntimeConfig();
 
 const id: Ref<string> = ref("");
@@ -36,20 +38,20 @@ onMounted(() => {
         return;
     }
 
-    const localAccessToken: string =
-        (localStorage.getItem("accessToken") as string) ?? "";
+    // const localAccessToken: string =
+    //     (localStorage.getItem("accessToken") as string) ?? "";
 
-    if (localAccessToken != "") {
-        sessionStorage.setItem("accessToken", localAccessToken);
-    }
+    // if (localAccessToken != "") {
+    //     sessionStorage.setItem("accessToken", localAccessToken);
+    // }
 
-    if (localAccessToken != "") {
-        localStorage.removeItem("accessToken");
-    }
+    // if (localAccessToken != "") {
+    //     localStorage.removeItem("accessToken");
+    // }
 
-    if ((sessionStorage.getItem("accessToken") ?? "") != "") {
-        return navigateTo("/");
-    }
+    // if ((sessionStorage.getItem("accessToken") ?? "") != "") {
+    //     return navigateTo("/");
+    // }
 });
 
 const tryLogin = async () => {
@@ -79,9 +81,9 @@ const tryLogin = async () => {
         return;
     }
 
-    const accessToken: string = result.token;
+    useAuthStore().login(result.nickname, result.token);
 
-    sessionStorage.setItem("accessToken", accessToken);
+    // sessionStorage.setItem("accessToken", accessToken);
 
     navigateTo("/");
 };
