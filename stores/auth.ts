@@ -17,7 +17,7 @@ export const useAuthStore = defineStore("user", () => {
         }
 
         try {
-            const result: any = await $fetch("/auth/status", {
+            const result: any = await $fetch("/member/info", {
                 baseURL: config.public.apiBase,
                 method: "GET",
                 query: {
