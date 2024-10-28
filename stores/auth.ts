@@ -1,28 +1,26 @@
 import { defineStore } from "pinia";
+import type { APIResponse, UserInfo } from "~/structure/type";
 
 interface UserState {
+    id: string;
     nickname: string;
     isLoggedIn: boolean;
 }
 
 export const useAuthStore = defineStore("user", () => {
     const config = useRuntimeConfig();
-    const accessToken = useCookie("accessToken");
+    const loadingStore = useLoadingStore();
 
     const userState: Ref<UserState | null> = ref(null);
 
     const checkAuth = async () => {
-        if (accessToken.value == null) {
-            return;
-        }
+        loadingStore.globalLoading = true;
 
         try {
-            const result: any = await $fetch("/member/info", {
+            const result: APIResponse<UserInfo> = await $fetch("/member/info", {
                 baseURL: config.public.apiBase,
                 method: "GET",
-                query: {
-                    accessToken: accessToken.value,
-                },
+                credentials: "include",
             });
 
             if (!result.success) {
@@ -32,28 +30,37 @@ export const useAuthStore = defineStore("user", () => {
             }
 
             userState.value = {
-                nickname: result.nickname,
+                id: result.data.id,
+                nickname: result.data.nickname,
                 isLoggedIn: true,
             };
         } catch (error) {
             console.error("인증 상태 확인 오류", error);
             userState.value = null;
         }
+
+        loadingStore.globalLoading = false;
     };
 
-    // const setToken = (token: string) => {
-    //     accessToken.value = token;
-    //     console.log("work");
-    // };
-
-    const login = (userNickname: string, token: string) => {
-        userState.value = { nickname: userNickname, isLoggedIn: true };
-        accessToken.value = token;
+    const login = (id: string, userNickname: string) => {
+        userState.value = { id: id, nickname: userNickname, isLoggedIn: true };
     };
 
-    const logout = () => {
+    const logout = async () => {
+        loadingStore.globalLoading = true;
+
+        try {
+            const result: APIResponse<null> = await $fetch("/member/logout", {
+                baseURL: config.public.apiBase,
+                method: "POST",
+                credentials: "include",
+            });
+        } catch (error) {
+            console.error("로그아웃 실패:", error);
+        }
+
+        loadingStore.globalLoading = false;
         userState.value = null;
-        accessToken.value = null;
     };
 
     return {
