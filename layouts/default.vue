@@ -19,7 +19,21 @@
                         <div :class="$style.nickname">
                             {{ authStore.userState?.nickname }}
                         </div>
-                        <div @click="goLogin" :class="$style.user" />
+                        <template v-if="isLogin()">
+                            <el-dropdown placement="bottom" trigger="click">
+                                <div :class="$style.user" />
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item @click="logout()">
+                                            로그아웃
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </template>
+                        <template v-else>
+                            <div @click="goLogin" :class="$style.user" />
+                        </template>
                     </div>
                 </div>
             </div>
@@ -51,20 +65,24 @@ const authStore = useAuthStore();
 const search: Ref<string> = ref("");
 
 const goLogin = () => {
-    if (useAuthStore().userState != null) {
-        useAuthStore().logout();
+    if (authStore.userState != null) {
+        authStore.logout();
         return;
     }
 
     navigateTo("/auth/login");
 };
 
+const isLogin = (): boolean => {
+    return authStore.userState != null;
+};
+
+const logout = () => {
+    authStore.logout();
+};
+
 onMounted(async () => {
-    loadingStore.globalLoading = true;
-
-    await useAuthStore().checkAuth();
-
-    loadingStore.globalLoading = false;
+    await authStore.checkAuth();
 });
 </script>
 
@@ -145,6 +163,7 @@ onMounted(async () => {
                         color: white;
                     }
 
+                    > :global(.el-dropdown) > .user,
                     > .user {
                         width: 30px;
                         height: 30px;
