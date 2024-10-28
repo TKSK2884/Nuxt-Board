@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/auth";
+import type { APIResponse, UserInfo } from "~/structure/type";
 
 const config = useRuntimeConfig();
 
@@ -37,21 +38,6 @@ onMounted(() => {
     if (process.server) {
         return;
     }
-
-    // const localAccessToken: string =
-    //     (localStorage.getItem("accessToken") as string) ?? "";
-
-    // if (localAccessToken != "") {
-    //     sessionStorage.setItem("accessToken", localAccessToken);
-    // }
-
-    // if (localAccessToken != "") {
-    //     localStorage.removeItem("accessToken");
-    // }
-
-    // if ((sessionStorage.getItem("accessToken") ?? "") != "") {
-    //     return navigateTo("/");
-    // }
 });
 
 const tryLogin = async () => {
@@ -65,13 +51,14 @@ const tryLogin = async () => {
         return;
     }
 
-    const result: any = await $fetch("/member/login", {
+    const result: APIResponse<UserInfo> = await $fetch("/member/login", {
         baseURL: config.public.apiBase,
         method: "POST",
         body: {
             id: id.value,
             password: password.value,
         },
+        credentials: "include",
     });
 
     if (!result.success) {
@@ -81,9 +68,7 @@ const tryLogin = async () => {
         return;
     }
 
-    useAuthStore().login(result.nickname, result.token);
-
-    // sessionStorage.setItem("accessToken", accessToken);
+    useAuthStore().login(result.data.id, result.data.nickname);
 
     navigateTo("/");
 };
