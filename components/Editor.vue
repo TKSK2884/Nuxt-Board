@@ -8,7 +8,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="굵게"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 @click="
@@ -24,7 +24,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="기울임꼴"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -40,7 +40,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="밑줄"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -64,7 +64,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="취소선"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -80,7 +80,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="폰트 크기"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-dropdown trigger="click">
                                 <el-button
@@ -121,7 +121,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="실행취소"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[$style.undo, $style.button]"
@@ -131,7 +131,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="되돌리기"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[$style.redo, $style.button]"
@@ -145,7 +145,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="왼쪽 정렬"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -160,7 +160,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="중앙 정렬"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -175,7 +175,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="오른쪽 정렬"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -190,7 +190,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="숫자 리스트"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -214,7 +214,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="점 리스트"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -238,7 +238,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="들여쓰기"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -255,7 +255,7 @@
                         <el-tooltip
                             :class="$style.tooltip"
                             content="내어쓰기"
-                            placement="bottom-start"
+                            placement="bottom"
                         >
                             <el-button
                                 :class="[
@@ -285,7 +285,7 @@
                 </div>
             </div>
             <div :class="$style.bottom">
-                <el-button> 글 작성 </el-button>
+                <el-button @click="writeContent"> 글 작성 </el-button>
             </div>
         </div>
     </div>
@@ -299,11 +299,20 @@ import TextAlign from "@tiptap/extension-text-align";
 import FontSize from "~/extensions/Fontsize";
 import { Indent } from "~/extensions/indent";
 import Underline from "@tiptap/extension-underline";
+import { ElMessage } from "element-plus";
+import type { RuntimeConfig } from "nuxt/schema";
+import type { APIResponse, WritePost } from "~/structure/type";
+
+const config: RuntimeConfig = useRuntimeConfig();
+const authStore = useAuthStore();
+const loadingStore = useLoadingStore();
 
 const editor: Ref<Editor | undefined> = ref(undefined);
-const model: Ref<string | undefined> = defineModel({
-    default: "",
-});
+const content: Ref<string> = ref("");
+const props = defineProps<{
+    category?: string;
+}>();
+
 const title: Ref<string> = ref("");
 
 const fontSizes: string[] = [
@@ -326,6 +335,14 @@ const fontSizes: string[] = [
 const extend: Ref<boolean> = ref(false);
 
 onMounted(async () => {
+    if (authStore.userState == null) {
+        ElMessage({ message: "로그인이 필요합니다.", type: "warning" });
+
+        navigateTo("/auth/login");
+
+        return;
+    }
+
     if (process.server) {
         return;
     }
@@ -345,7 +362,10 @@ onMounted(async () => {
             }),
             Underline,
         ],
-        content: model.value,
+        content: content.value,
+        onUpdate: ({ editor }) => {
+            content.value = editor.getHTML();
+        },
     });
 });
 
@@ -360,16 +380,48 @@ const setFontSize = (size: string) => {
     editor.value.chain().focus().setFontSize(size).run();
 };
 
-const unsetFontSize = () => {
-    if (editor.value == null) {
+const changeExtend = (): void => {
+    extend.value = !extend.value;
+};
+
+const writeContent = async () => {
+    if (title.value.trim() == "") {
+        ElMessage({ message: "제목을 입력해주세요", type: "warning" });
         return;
     }
 
-    editor.value.chain().focus().unsetFontSize().run();
-};
+    if (content.value.trim() == "") {
+        ElMessage({ message: "내용을 입력해주세요", type: "warning" });
+        return;
+    }
 
-const changeExtend = (): void => {
-    extend.value = !extend.value;
+    if (loadingStore.globalLoading) {
+        return;
+    }
+
+    loadingStore.globalLoading = true;
+
+    const result: APIResponse<WritePost> = await $fetch("/write", {
+        baseURL: config.public.apiBase,
+        method: "POST",
+        body: {
+            title: title.value,
+            content: content.value,
+            writer: authStore.userState?.id,
+            category: props.category,
+        },
+        credentials: "include",
+    });
+
+    loadingStore.globalLoading = false;
+
+    if (!result.success) {
+        ElMessage({ message: "쓰기 실패", type: "error" });
+
+        return;
+    }
+
+    ElMessage({ message: "글쓰기 성공", type: "success" });
 };
 </script>
 
@@ -535,7 +587,7 @@ const changeExtend = (): void => {
         }
 
         > .bottom {
-            margin-top: 10px;
+            margin-block: 10px;
 
             display: flex;
             justify-content: flex-end;
