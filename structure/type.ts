@@ -52,6 +52,6 @@ export interface PostItem {
     writer: string;
     likes: number;
     views: number;
-    date: string;
+    date: Date;
     content: string;
 }
