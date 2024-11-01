@@ -37,7 +37,7 @@ export interface Board {
 }
 
 export interface BoardArray {
-    id: string;
+    id: number;
     writer: string;
     title: string;
     content: string;
@@ -45,4 +45,13 @@ export interface BoardArray {
     views: number;
     likes: number;
     category_order: number;
+}
+
+export interface PostItem {
+    title: string;
+    writer: string;
+    likes: number;
+    views: number;
+    date: string;
+    content: string;
 }

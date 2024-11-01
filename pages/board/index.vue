@@ -31,6 +31,7 @@
             <div
                 v-for="(board, index) in boardItems"
                 :key="'board-' + index"
+                @click="goPost(board.id)"
                 :class="$style.item"
             >
                 <div :class="$style.inner">
@@ -106,6 +107,13 @@ const goWrite = () => {
     navigateTo({ path: "/board/write", query: { category: category.value } });
 };
 
+const goPost = (id: number) => {
+    navigateTo({
+        path: "/board/post",
+        query: { category: category.value, id: id },
+    });
+};
+
 const pageChange = (number: number) => {
     page.value = number;
 
@@ -113,10 +121,7 @@ const pageChange = (number: number) => {
 };
 
 onMounted(() => {
-    if (
-        typeof route.query.category === "string" &&
-        route.query.category != null
-    ) {
+    if (typeof route.query.category === "string") {
         category.value = route.query.category;
     }
 
@@ -187,6 +192,10 @@ onMounted(() => {
                     }
                 }
             }
+        }
+
+        > .item {
+            cursor: pointer;
         }
 
         > .page {
