@@ -148,8 +148,6 @@ onMounted(() => {
 
         > .head,
         > .item {
-            cursor: pointer;
-
             > .inner {
                 display: flex;
                 flex: 1;
@@ -194,6 +192,10 @@ onMounted(() => {
                     }
                 }
             }
+        }
+
+        > .item {
+            cursor: pointer;
         }
 
         > .page {
