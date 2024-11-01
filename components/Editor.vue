@@ -297,7 +297,7 @@ import StarterKit from "@tiptap/starter-kit";
 import TextStyle from "@tiptap/extension-text-style";
 import TextAlign from "@tiptap/extension-text-align";
 import FontSize from "~/extensions/Fontsize";
-import { Indent } from "~/extensions/indent";
+import { Indent } from "~/extensions/Indent";
 import Underline from "@tiptap/extension-underline";
 import { ElMessage } from "element-plus";
 import type { RuntimeConfig } from "nuxt/schema";
