@@ -39,7 +39,7 @@
                             <div :class="$style.date">
                                 <span :class="$style.head"> 작성일 </span>
                                 <span :class="$style.body">
-                                    {{ postItem.date }}
+                                    {{ convertKoreaTime(postItem.date) }}
                                 </span>
                             </div>
                         </div>
@@ -88,20 +88,23 @@ const postItem: Ref<PostItem | null> = ref(null);
 const getPostItem = async () => {
     loadingStore.globalLoading = true;
 
-    const result: APIResponse<PostItem> = await $fetch("/read", {
-        baseURL: config.public.apiBase,
-        query: {
-            id: id.value,
-        },
-    });
+    try {
+        const result: APIResponse<PostItem> = await $fetch("/read", {
+            baseURL: config.public.apiBase,
+            query: {
+                id: id.value,
+            },
+        });
 
-    loadingStore.globalLoading = false;
+        postItem.value = result.data;
+    } catch (error) {
+        ElMessage({ message: "존재하지 않는 글입니다.", type: "error" });
 
-    if (!result.success) {
+        navigateTo("/");
         return;
+    } finally {
+        loadingStore.globalLoading = false;
     }
-
-    postItem.value = result.data;
 };
 
 const sanitizeContent = (content: string): string => {
