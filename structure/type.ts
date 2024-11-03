@@ -14,7 +14,7 @@ export interface APIResponse<T> {
 }
 
 export interface UserInfo {
-    id: string;
+    id: number;
     nickname: string;
 }
 
@@ -41,14 +41,16 @@ export interface BoardArray {
     writer: string;
     title: string;
     content: string;
-    written_time: string;
+    written_time: Date;
     views: number;
     likes: number;
     category_order: number;
 }
 
 export interface PostItem {
+    id: number;
     title: string;
+    writer_id: number;
     writer: string;
     likes: number;
     views: number;
