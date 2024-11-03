@@ -285,7 +285,9 @@
                 </div>
             </div>
             <div :class="$style.bottom">
-                <el-button @click="writeContent"> 글 작성 </el-button>
+                <el-button @click="writeContent">
+                    {{ isEditModeText() }}
+                </el-button>
             </div>
         </div>
     </div>
@@ -301,7 +303,7 @@ import { Indent } from "~/extensions/Indent";
 import Underline from "@tiptap/extension-underline";
 import { ElMessage } from "element-plus";
 import type { RuntimeConfig } from "nuxt/schema";
-import type { APIResponse, WritePost } from "~/structure/type";
+import type { PostItem } from "~/structure/type";
 
 const config: RuntimeConfig = useRuntimeConfig();
 const authStore = useAuthStore();
@@ -311,7 +313,10 @@ const editor: Ref<Editor | undefined> = ref(undefined);
 const content: Ref<string> = ref("");
 const props = defineProps<{
     category?: string;
+    postItem?: PostItem | null;
+    editMode?: boolean | null;
 }>();
+const emit = defineEmits(["toggle"]);
 
 const title: Ref<string> = ref("");
 
@@ -341,6 +346,11 @@ onMounted(async () => {
         navigateTo("/auth/login");
 
         return;
+    }
+
+    if (props.editMode && props.postItem != null) {
+        title.value = props.postItem.title;
+        content.value = props.postItem.content;
     }
 
     if (process.server) {
@@ -401,27 +411,48 @@ const writeContent = async () => {
 
     loadingStore.globalLoading = true;
 
-    const result: APIResponse<WritePost> = await $fetch("/write", {
-        baseURL: config.public.apiBase,
-        method: "POST",
-        body: {
-            title: title.value,
-            content: content.value,
-            writer: authStore.userState?.id,
-            category: props.category,
-        },
-        credentials: "include",
-    });
-
-    loadingStore.globalLoading = false;
-
-    if (!result.success) {
+    try {
+        if (props.editMode) {
+            await $fetch("/update", {
+                baseURL: config.public.apiBase,
+                method: "POST",
+                body: {
+                    id: props.postItem?.id,
+                    title: title.value,
+                    content: content.value,
+                },
+                credentials: "include",
+            });
+        } else {
+            await $fetch("/write", {
+                baseURL: config.public.apiBase,
+                method: "POST",
+                body: {
+                    title: title.value,
+                    content: content.value,
+                    writer: authStore.userState?.id,
+                    category: props.category,
+                },
+                credentials: "include",
+            });
+        }
+    } catch (error) {
         ElMessage({ message: "쓰기 실패", type: "error" });
-
         return;
+    } finally {
+        loadingStore.globalLoading = false;
     }
 
-    ElMessage({ message: "글쓰기 성공", type: "success" });
+    ElMessage({ message: isEditModeText() + "성공", type: "success" });
+
+    navigateTo({
+        path: "/board",
+        query: { category: props.category },
+    });
+};
+
+const isEditModeText = (): string => {
+    return props.editMode ? "글 수정 " : "글 작성";
 };
 </script>
 

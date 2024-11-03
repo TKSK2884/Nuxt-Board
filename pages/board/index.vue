@@ -49,7 +49,7 @@
                             {{ board.writer }}
                         </div>
                         <div :class="$style.date">
-                            {{ board.written_time }}
+                            {{ convertKoreaTime(board.written_time) }}
                         </div>
 
                         <div :class="$style.views">
