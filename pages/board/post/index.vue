@@ -2,72 +2,90 @@
     <div :class="$style.index">
         <div :class="$style.inner">
             <template v-if="postItem != null">
-                <div :class="$style.head">
-                    <div :class="$style.title">
-                        <div :class="$style.text">
-                            {{ postItem.title }}
-                        </div>
-                    </div>
-                    <div :class="$style.desc">
-                        <div :class="$style.left">
-                            <div :class="$style.writer">
-                                {{ postItem.writer }}
-                            </div>
-                        </div>
-                        <div :class="$style.right">
-                            <div :class="$style.likes">
-                                <span :class="$style.head"> 추천 </span>
-                                <span :class="$style.body">
-                                    {{ postItem.likes }}
-                                </span>
-                            </div>
-                            <div :class="$style.sep" />
-                            <div :class="$style.comments">
-                                <span :class="$style.head"> </span>
-                                <span :class="$style.body"> </span>
-                            </div>
-                            <!-- <div :class="$style.sep" /> -->
-
-                            <div :class="$style.views">
-                                <span :class="$style.head"> 조회수 </span>
-                                <span :class="$style.body">
-                                    {{ postItem.views }}
-                                </span>
-                            </div>
-                            <div :class="$style.sep" />
-
-                            <div :class="$style.date">
-                                <span :class="$style.head"> 작성일 </span>
-                                <span :class="$style.body">
-                                    {{ convertKoreaTime(postItem.date) }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    v-html="sanitizeContent(postItem.content)"
-                    :class="$style.content"
-                />
-
-                <div :class="$style.footer">
-                    <div :class="$style.likes">
-                        <el-button :class="$style.button"> 추천 </el-button>
-                        <el-button :class="$style.button"> 비추천 </el-button>
-                    </div>
-
-                    <div :class="$style.comment">
+                <template v-if="!editMode">
+                    <div :class="$style.head">
                         <div :class="$style.title">
-                            <div :class="$style.text">댓글</div>
-                            <div :class="$style.write">
-                                <el-button>글 쓰기</el-button>
+                            <div :class="$style.text">
+                                {{ postItem.title }}
                             </div>
                         </div>
-                        <div :class="$style.list">
-                            <div :class="$style.item"></div>
+                        <div :class="$style.desc">
+                            <div :class="$style.left">
+                                <div :class="$style.writer">
+                                    {{ postItem.writer }}
+                                </div>
+                            </div>
+                            <div :class="$style.right">
+                                <div :class="$style.likes">
+                                    <span :class="$style.head"> 추천 </span>
+                                    <span :class="$style.body">
+                                        {{ postItem.likes }}
+                                    </span>
+                                </div>
+                                <div :class="$style.sep" />
+                                <div :class="$style.comments">
+                                    <span :class="$style.head"> </span>
+                                    <span :class="$style.body"> </span>
+                                </div>
+                                <!-- <div :class="$style.sep" /> -->
+
+                                <div :class="$style.views">
+                                    <span :class="$style.head"> 조회수 </span>
+                                    <span :class="$style.body">
+                                        {{ postItem.views }}
+                                    </span>
+                                </div>
+                                <div :class="$style.sep" />
+
+                                <div :class="$style.date">
+                                    <span :class="$style.head"> 작성일 </span>
+                                    <span :class="$style.body">
+                                        {{ convertKoreaTime(postItem.date) }}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div
+                        v-html="sanitizeContent(postItem.content)"
+                        :class="$style.content"
+                    />
+
+                    <div :class="$style.footer">
+                        <div :class="$style.likes">
+                            <el-button :class="$style.button"> 추천 </el-button>
+                            <el-button :class="$style.button">
+                                비추천
+                            </el-button>
+                        </div>
+
+                        <div :class="$style.comment">
+                            <div :class="$style.title">
+                                <div :class="$style.text">댓글</div>
+                                <div :class="$style.write">
+                                    <el-button
+                                        v-if="isUpdate()"
+                                        @click="toggleEditMode"
+                                    >
+                                        글 수정
+                                    </el-button>
+                                    <el-button>글 쓰기</el-button>
+                                </div>
+                            </div>
+                            <div :class="$style.list">
+                                <div :class="$style.item"></div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <template v-else>
+                    <Editor
+                        @toggle="toggleEditMode"
+                        :category="category"
+                        :editMode="editMode"
+                        :postItem="postItem"
+                    />
+                </template>
             </template>
         </div>
     </div>
@@ -80,10 +98,14 @@ import type { APIResponse, PostItem } from "~/structure/type";
 const route = useRoute();
 const config = useRuntimeConfig();
 
+const category: Ref<string> = ref("");
+
+const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
 
 const id: Ref<number> = ref(0);
 const postItem: Ref<PostItem | null> = ref(null);
+const editMode: Ref<boolean> = ref(false);
 
 const getPostItem = async () => {
     loadingStore.globalLoading = true;
@@ -118,8 +140,24 @@ onMounted(() => {
         id.value = Number(route.query.id);
     }
 
+    if (typeof route.query.category === "string") {
+        category.value = route.query.category;
+    }
+
     getPostItem();
 });
+
+const isUpdate = (): boolean => {
+    if (authStore.userState == null || postItem.value == null) {
+        return false;
+    }
+
+    return postItem.value.writer_id == authStore.userState.id;
+};
+
+const toggleEditMode = () => {
+    editMode.value = !editMode.value;
+};
 </script>
 
 <style lang="scss" module>
