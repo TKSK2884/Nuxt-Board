@@ -24,6 +24,9 @@
                                 <div :class="$style.user" />
                                 <template #dropdown>
                                     <el-dropdown-menu>
+                                        <el-dropdown-item @click="goCreate()">
+                                            게시판 생성
+                                        </el-dropdown-item>
                                         <el-dropdown-item @click="logout()">
                                             로그아웃
                                         </el-dropdown-item>
@@ -75,6 +78,10 @@ const goLogin = () => {
 
 const isLogin = (): boolean => {
     return authStore.userState != null;
+};
+
+const goCreate = () => {
+    navigateTo("/board/create");
 };
 
 const logout = () => {
