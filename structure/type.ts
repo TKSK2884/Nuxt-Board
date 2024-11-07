@@ -21,8 +21,8 @@ export interface UserInfo {
 export interface BoardList {
     id: number;
     title: string;
-    category: string;
-    post: Post[];
+    slug: string;
+    post: PostItem[];
 }
 
 export interface WritePost {
@@ -54,6 +54,6 @@ export interface PostItem {
     writer: string;
     likes: number;
     views: number;
-    date: Date;
+    written_time: Date;
     content: string;
 }
