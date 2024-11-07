@@ -13,94 +13,28 @@
 </template>
 
 <script setup lang="ts">
-import type { Board, Post } from "~/structure/type";
+import type { APIResponse, BoardList } from "~/structure/type";
 
 const config = useRuntimeConfig();
 
-const boardList: Board[] = [
-    {
-        id: 1,
-        title: "반려동물",
-        category: "pet",
-        post: [
-            {
-                id: 1,
-                postTitle: "우리 집에 새 가족이 생김",
-                feedback: 5,
-                time: 1214124,
-            },
-            {
-                id: 1,
-                postTitle: "우리 집에 새 가족이 생김",
-                feedback: 5,
-                time: 1214124,
-            },
-            {
-                id: 1,
-                postTitle: "우리 집에 새 가족이 생김",
-                feedback: 5,
-                time: 1214124,
-            },
-            {
-                id: 1,
-                postTitle: "우리 집에 새 가족이 생김",
-                feedback: 5,
-                time: 1214124,
-            },
-        ],
-    },
-    {
-        id: 2,
-        title: "게임",
-        category: "game",
-        post: [
-            {
-                id: 1,
-                postTitle: "우리 집에 새 가족이 생김",
-                feedback: 5,
-                time: 1214124,
-            },
-        ],
-    },
-];
+const boardList: Ref<BoardList[]> = ref([]);
 
 onMounted(() => {
     if (process.server) {
         return;
     }
 
-    let sessionAccessToken: string =
-        sessionStorage.getItem("accessToken") ?? "";
-
-    const accessToken: string = localStorage.getItem("accessToken") ?? "";
-
-    if (accessToken != "") {
-        localStorage.removeItem("accessToken");
-        sessionStorage.setItem("accessToken", accessToken);
-
-        sessionAccessToken = accessToken;
-    }
-
-    if (sessionAccessToken != "") {
-        getUserNickname(sessionAccessToken);
-    }
+    getBoardList();
 });
 
-const getUserNickname = async (token: string) => {
-    if (token == "") {
-        return;
-    }
-
-    const result: any = await $fetch("/member/info", {
+const getBoardList = async () => {
+    const result: APIResponse<BoardList[]> = await $fetch("/board/category", {
         baseURL: config.public.apiBase,
         method: "GET",
-        headers: {
-            authorization: token,
-        },
     });
-};
 
-const getBoardList = () => {};
+    boardList.value = result.data;
+};
 </script>
 
 <style lang="scss" module>
