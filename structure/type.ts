@@ -1,10 +1,3 @@
-export interface Post {
-    id: number;
-    postTitle: string;
-    feedback: number;
-    time: number;
-}
-
 export interface APIResponse<T> {
     success: boolean;
     data: T;
@@ -36,6 +29,13 @@ export interface Board {
     array: BoardArray[];
 }
 
+export interface BoardInfo {
+    id: number;
+    title: string;
+    description: string;
+    slug: string;
+}
+
 export interface BoardArray {
     id: number;
     writer: string;
@@ -45,6 +45,10 @@ export interface BoardArray {
     views: number;
     likes: number;
     category_order: number;
+}
+
+export interface Post {
+    post: PostItem;
 }
 
 export interface PostItem {
