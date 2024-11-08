@@ -18,7 +18,7 @@
             <div
                 v-for="(content, index) in props.board.post"
                 :key="'content-' + index"
-                @click="goPost(content, props.board.id)"
+                @click="goPost(content, props.board.slug)"
                 :class="$style.content"
             >
                 <div :class="$style.left">
@@ -59,13 +59,13 @@ const getBoardItem = (content: PostItem) => {
     return {};
 };
 
-const goPost = (content: PostItem, id: number) => {
-    if (content == null || id == null) return;
+const goPost = (content: PostItem, category: string) => {
+    if (content == null || category == null) return;
 
     navigateTo({
         path: "/board/post",
         query: {
-            category: id,
+            category: category,
             id: content.id,
         },
     });
@@ -112,6 +112,8 @@ const goPost = (content: PostItem, id: number) => {
     }
 
     > .inner {
+        padding-inline: 8px;
+
         > .content {
             margin-bottom: 8px;
 
@@ -122,6 +124,7 @@ const goPost = (content: PostItem, id: number) => {
             > .left {
                 display: flex;
                 flex: 1;
+                align-items: center;
 
                 gap: 4px;
 
@@ -139,6 +142,15 @@ const goPost = (content: PostItem, id: number) => {
             }
 
             > .right {
+                > .time {
+                    font-size: 12px;
+
+                    color: white;
+                    background-color: #3d414d;
+
+                    padding: 4px;
+                    border-radius: 8px;
+                }
             }
         }
     }
