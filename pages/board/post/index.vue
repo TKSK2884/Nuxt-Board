@@ -40,7 +40,11 @@
                                 <div :class="$style.date">
                                     <span :class="$style.head"> 작성일 </span>
                                     <span :class="$style.body">
-                                        {{ convertKoreaTime(postItem.date) }}
+                                        {{
+                                            convertKoreaTime(
+                                                postItem.written_time
+                                            )
+                                        }}
                                     </span>
                                 </div>
                             </div>
@@ -69,7 +73,9 @@
                                     >
                                         글 수정
                                     </el-button>
-                                    <el-button>글 쓰기</el-button>
+                                    <el-button @click="goWrite"
+                                        >글 쓰기</el-button
+                                    >
                                 </div>
                             </div>
                             <div :class="$style.list">
@@ -129,6 +135,10 @@ const getPostItem = async () => {
     }
 };
 
+const goWrite = () => {
+    navigateTo({ path: "/board/write", query: { category: category.value } });
+};
+
 const sanitizeContent = (content: string): string => {
     if (postItem.value == null) return "";
 
@@ -167,6 +177,8 @@ const toggleEditMode = () => {
 
     > .inner {
         > .head {
+            margin-top: 10px;
+
             border-top: 1px solid;
             border-bottom: 1px solid;
 
@@ -181,9 +193,6 @@ const toggleEditMode = () => {
 
                 border-bottom: 1px solid;
                 border-color: #bbb;
-
-                > .text {
-                }
             }
 
             > .desc {
@@ -219,7 +228,7 @@ const toggleEditMode = () => {
         }
 
         > .content {
-            padding-block: 10px;
+            padding: 10px;
 
             @for $i from 1 through 8 {
                 [data-indent="#{$i}"] {
