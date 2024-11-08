@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import type { APIResponse, UserInfo } from "~/structure/type";
 
 interface UserState {
-    id: string;
+    id: number;
     nickname: string;
     isLoggedIn: boolean;
 }
@@ -35,14 +35,13 @@ export const useAuthStore = defineStore("user", () => {
                 isLoggedIn: true,
             };
         } catch (error) {
-            console.error("인증 상태 확인 오류", error);
             userState.value = null;
         }
 
         loadingStore.globalLoading = false;
     };
 
-    const login = (id: string, userNickname: string) => {
+    const login = (id: number, userNickname: string) => {
         userState.value = { id: id, nickname: userNickname, isLoggedIn: true };
     };
 
@@ -50,7 +49,7 @@ export const useAuthStore = defineStore("user", () => {
         loadingStore.globalLoading = true;
 
         try {
-            const result: APIResponse<null> = await $fetch("/member/logout", {
+            await $fetch("/member/logout", {
                 baseURL: config.public.apiBase,
                 method: "POST",
                 credentials: "include",
