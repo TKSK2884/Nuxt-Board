@@ -1,12 +1,5 @@
 <template>
     <div :class="$style.index">
-        <div :class="$style.title">
-            <div :class="$style.logo" />
-            <div :class="$style.desc">
-                <div :class="$style.desc">타이틀</div>
-                <div :class="$style.sub">설명</div>
-            </div>
-        </div>
         <div :class="$style.write">
             <el-button @click="goWrite"> 글쓰기 </el-button>
         </div>
@@ -134,11 +127,9 @@ onMounted(() => {
     width: 100%;
     height: 100%;
 
-    > .head {
-        display: flex;
-    }
-
     > .write {
+        padding-top: 10px;
+
         display: flex;
         justify-content: flex-end;
     }
