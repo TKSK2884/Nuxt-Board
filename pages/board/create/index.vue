@@ -91,7 +91,6 @@ onMounted(() => {
 
     > .inner {
         padding: 20px;
-        margin-top: 30px;
 
         border-radius: 10px;
         border: 1px solid;

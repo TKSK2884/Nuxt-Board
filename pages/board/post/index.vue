@@ -40,7 +40,11 @@
                                 <div :class="$style.date">
                                     <span :class="$style.head"> 작성일 </span>
                                     <span :class="$style.body">
-                                        {{ convertKoreaTime(postItem.date) }}
+                                        {{
+                                            convertKoreaTime(
+                                                postItem.written_time
+                                            )
+                                        }}
                                     </span>
                                 </div>
                             </div>
@@ -69,7 +73,9 @@
                                     >
                                         글 수정
                                     </el-button>
-                                    <el-button>글 쓰기</el-button>
+                                    <el-button @click="goWrite"
+                                        >글 쓰기</el-button
+                                    >
                                 </div>
                             </div>
                             <div :class="$style.list">
@@ -93,7 +99,7 @@
 
 <script setup lang="ts">
 import DOMPurify from "dompurify";
-import type { APIResponse, PostItem } from "~/structure/type";
+import type { APIResponse, Post, PostItem } from "~/structure/type";
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -111,14 +117,14 @@ const getPostItem = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        const result: APIResponse<PostItem> = await $fetch("/read", {
+        const result: APIResponse<Post> = await $fetch("/read", {
             baseURL: config.public.apiBase,
             query: {
                 id: id.value,
             },
         });
 
-        postItem.value = result.data;
+        postItem.value = result.data.post;
     } catch (error) {
         ElMessage({ message: "존재하지 않는 글입니다.", type: "error" });
 
@@ -127,6 +133,10 @@ const getPostItem = async () => {
     } finally {
         loadingStore.globalLoading = false;
     }
+};
+
+const goWrite = () => {
+    navigateTo({ path: "/board/write", query: { category: category.value } });
 };
 
 const sanitizeContent = (content: string): string => {
@@ -167,6 +177,8 @@ const toggleEditMode = () => {
 
     > .inner {
         > .head {
+            margin-top: 10px;
+
             border-top: 1px solid;
             border-bottom: 1px solid;
 
@@ -181,9 +193,6 @@ const toggleEditMode = () => {
 
                 border-bottom: 1px solid;
                 border-color: #bbb;
-
-                > .text {
-                }
             }
 
             > .desc {
@@ -219,7 +228,7 @@ const toggleEditMode = () => {
         }
 
         > .content {
-            padding-block: 10px;
+            padding: 10px;
 
             @for $i from 1 through 8 {
                 [data-indent="#{$i}"] {
