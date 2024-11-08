@@ -99,7 +99,7 @@
 
 <script setup lang="ts">
 import DOMPurify from "dompurify";
-import type { APIResponse, PostItem } from "~/structure/type";
+import type { APIResponse, Post, PostItem } from "~/structure/type";
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -117,14 +117,14 @@ const getPostItem = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        const result: APIResponse<PostItem> = await $fetch("/read", {
+        const result: APIResponse<Post> = await $fetch("/read", {
             baseURL: config.public.apiBase,
             query: {
                 id: id.value,
             },
         });
 
-        postItem.value = result.data;
+        postItem.value = result.data.post;
     } catch (error) {
         ElMessage({ message: "존재하지 않는 글입니다.", type: "error" });
 
