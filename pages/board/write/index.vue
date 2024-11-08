@@ -14,10 +14,7 @@ const route = useRoute();
 const category: Ref<string> = ref("");
 
 onMounted(() => {
-    if (
-        typeof route.query.category === "string" &&
-        route.query.category != null
-    ) {
+    if (typeof route.query.category === "string") {
         category.value = route.query.category;
     }
 });
