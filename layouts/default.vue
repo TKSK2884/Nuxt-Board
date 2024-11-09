@@ -42,6 +42,19 @@
             </div>
             <div :class="$style.body">
                 <div :class="$style.contents">
+                    <div
+                        v-if="shouldShowTitle() && boardInfo != null"
+                        :class="$style.boardInfo"
+                    >
+                        <div :class="$style.inner">
+                            <div @click="goBoard" :class="$style.title">
+                                {{ boardInfo.title }} 게시판
+                            </div>
+                            <div :class="$style.desc">
+                                {{ boardInfo.description }}
+                            </div>
+                        </div>
+                    </div>
                     <slot />
                 </div>
                 <div :class="$style.banner"></div>
@@ -61,9 +74,14 @@
 import { Search } from "@element-plus/icons-vue";
 import { useAuthStore } from "~/stores/auth";
 import { useLoadingStore } from "~/stores/loading";
+import type { APIResponse, BoardInfo } from "~/structure/type";
 
+const config = useRuntimeConfig();
 const loadingStore = useLoadingStore();
 const authStore = useAuthStore();
+const route = useRoute();
+const category = ref("");
+const boardInfo: Ref<BoardInfo | null> = ref(null);
 
 const search: Ref<string> = ref("");
 
@@ -91,6 +109,51 @@ const logout = () => {
 onMounted(async () => {
     await authStore.checkAuth();
 });
+
+const shouldShowTitle = () => {
+    return route.path.includes("/board");
+};
+
+const getBoardInfo = async () => {
+    loadingStore.globalLoading = true;
+
+    const result: APIResponse<BoardInfo> = await $fetch("/board/info", {
+        baseURL: config.public.apiBase,
+        method: "GET",
+        query: {
+            category: category.value,
+        },
+    });
+
+    loadingStore.globalLoading = false;
+
+    boardInfo.value = result.data;
+};
+
+const goBoard = () => {
+    navigateTo({
+        path: "/board",
+        query: { category: boardInfo.value?.slug },
+    });
+};
+
+watch(
+    () => route.query.category,
+    (newCategory) => {
+        if (typeof newCategory === "string") {
+            category.value = newCategory;
+        } else {
+            category.value = "";
+        }
+
+        if (category.value == "") {
+            boardInfo.value = null;
+            return;
+        }
+
+        getBoardInfo();
+    }
+);
 </script>
 
 <style lang="scss" module>
@@ -113,7 +176,6 @@ onMounted(async () => {
             min-height: 40px;
 
             padding-block: 10px;
-            margin-bottom: 10px;
 
             background-color: #3d414d;
 
@@ -189,12 +251,47 @@ onMounted(async () => {
             width: 100%;
             height: 100%;
 
+            background-color: #eee;
+
             > .contents {
                 max-width: 1024px;
-                height: 100%;
+                height: 100dvh;
+
+                background-color: white;
 
                 padding-inline: 20px;
+                padding-top: 20px;
                 margin-inline: auto;
+
+                border-left: 1px solid;
+                border-right: 1px solid;
+                border-color: #bbb;
+
+                > .boardInfo {
+                    > .inner {
+                        padding-bottom: 10px;
+
+                        border-bottom: 1px solid;
+                        border-color: #bbb;
+
+                        > .title {
+                            font-size: 24px;
+                            margin-bottom: 8px;
+
+                            cursor: pointer;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+
+                        > .desc {
+                            font-size: 16px;
+
+                            color: #bbb;
+                        }
+                    }
+                }
             }
 
             > banner {
@@ -207,10 +304,13 @@ onMounted(async () => {
 
             padding: 20px;
 
-            background-color: #bbbbbb;
+            background-color: #f5f5f5;
 
             position: absolute;
             bottom: 0px;
+
+            border-top: 1px solid;
+            border-color: #bbb;
         }
 
         > .loading {
