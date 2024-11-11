@@ -57,9 +57,14 @@
 
                     <div :class="$style.footer">
                         <div :class="$style.likes">
-                            <el-button :class="$style.button"> 추천 </el-button>
-                            <el-button :class="$style.button">
-                                비추천
+                            <el-button @click="addLike" :class="$style.button">
+                                추천 {{ postItem.likes }}
+                            </el-button>
+                            <el-button
+                                @click="addDisLike"
+                                :class="$style.button"
+                            >
+                                비추천 {{ postItem.dislikes }}
                             </el-button>
                         </div>
 
@@ -119,6 +124,7 @@ const getPostItem = async () => {
     try {
         const result: APIResponse<Post> = await $fetch("/read", {
             baseURL: config.public.apiBase,
+            method: "GET",
             query: {
                 id: id.value,
             },
@@ -143,6 +149,84 @@ const sanitizeContent = (content: string): string => {
     if (postItem.value == null) return "";
 
     return DOMPurify.sanitize(content);
+};
+
+const addLike = async () => {
+    if (postItem.value == null) return;
+    if (loadingStore.globalLoading) return;
+
+    if (authStore.userState == null) {
+        ElMessage({ message: "로그인이 필요합니다.", type: "error" });
+
+        return;
+    }
+
+    postItem.value.likes += 1;
+
+    loadingStore.globalLoading = true;
+
+    try {
+        const result: APIResponse<null> = await $fetch("/like", {
+            baseURL: config.public.apiBase,
+            method: "POST",
+            body: {
+                postId: postItem.value.id,
+                userId: authStore.userState.id,
+            },
+        });
+
+        if (!result.success) {
+            ElMessage({
+                message: "이미 추천된 게시글입니다.",
+                type: "error",
+            });
+
+            postItem.value.likes -= 1;
+        }
+    } catch (error) {
+        return;
+    } finally {
+        loadingStore.globalLoading = false;
+    }
+};
+
+const addDisLike = async () => {
+    if (postItem.value == null) return;
+    if (loadingStore.globalLoading) return;
+
+    if (authStore.userState == null) {
+        ElMessage({ message: "로그인이 필요합니다.", type: "error" });
+
+        return;
+    }
+
+    postItem.value.dislikes += 1;
+
+    loadingStore.globalLoading = true;
+
+    try {
+        const result: APIResponse<null> = await $fetch("/dislike", {
+            baseURL: config.public.apiBase,
+            method: "POST",
+            body: {
+                postId: postItem.value.id,
+                userId: authStore.userState.id,
+            },
+        });
+
+        if (!result.success) {
+            ElMessage({
+                message: "이미 비추천된 게시글입니다.",
+                type: "error",
+            });
+
+            postItem.value.dislikes -= 1;
+        }
+    } catch (error) {
+        return;
+    } finally {
+        loadingStore.globalLoading = false;
+    }
 };
 
 onMounted(() => {
