@@ -44,6 +44,7 @@ export interface BoardArray {
     written_time: Date;
     views: number;
     likes: number;
+    dislikes: number;
     category_order: number;
 }
 
@@ -57,6 +58,7 @@ export interface PostItem {
     writer_id: number;
     writer: string;
     likes: number;
+    dislikes: number;
     views: number;
     written_time: Date;
     content: string;
