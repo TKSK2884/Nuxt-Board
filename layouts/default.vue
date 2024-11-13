@@ -59,9 +59,6 @@
                 </div>
                 <div :class="$style.banner"></div>
             </div>
-            <div :class="$style.footer">
-                <div>Copyright(c) by 조현석</div>
-            </div>
 
             <div v-if="loadingStore.globalLoading" :class="$style.loading">
                 <LoadingIndicator />
@@ -168,8 +165,6 @@ watch(
         min-height: 100vh;
 
         position: relative;
-
-        padding-bottom: 60px;
 
         > .header {
             width: 100%;
@@ -296,21 +291,6 @@ watch(
 
             > banner {
             }
-        }
-
-        > .footer {
-            width: 100%;
-            height: 60px;
-
-            padding: 20px;
-
-            background-color: #f5f5f5;
-
-            position: absolute;
-            bottom: 0px;
-
-            border-top: 1px solid;
-            border-color: #bbb;
         }
 
         > .loading {
