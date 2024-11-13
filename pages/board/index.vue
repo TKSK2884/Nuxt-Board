@@ -75,6 +75,8 @@ const page: Ref<number> = ref(1);
 const boardItems: Ref<BoardArray[] | null> = ref(null);
 
 const getBoardItems = async () => {
+    if (loadingStore.globalLoading) return;
+
     loadingStore.globalLoading = true;
 
     const result: APIResponse<Board> = await $fetch("/board", {
@@ -89,6 +91,9 @@ const getBoardItems = async () => {
     loadingStore.globalLoading = false;
 
     if (!result.success) {
+        ElMessage({ message: "존재하지 않는 게시판입니다..", type: "warning" });
+
+        await navigateTo("/");
         return;
     }
 
