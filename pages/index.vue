@@ -53,6 +53,10 @@ const getBoardList = async () => {
 
         padding: 8px;
 
+        @include mobile {
+            display: block;
+        }
+
         > .board {
             padding: 8px;
             margin-block: 8px;
@@ -63,7 +67,6 @@ const getBoardList = async () => {
 
             @include mobile {
                 width: 100%;
-                flex-basis: 100%;
             }
         }
 
@@ -79,6 +82,10 @@ const getBoardList = async () => {
             bottom: -16px;
 
             border-bottom: 1px solid #bbb;
+
+            @include mobile {
+                bottom: -8px;
+            }
         }
 
         > .board:nth-child(odd) {
@@ -94,7 +101,13 @@ const getBoardList = async () => {
             display: none;
         }
 
-        > .board:last-child:last-child(odd) {
+        > .board:nth-last-child(2)::after {
+            @include mobile {
+                display: block;
+            }
+        }
+
+        > .board:last-child(odd) {
             margin-right: auto;
 
             @include mobile {

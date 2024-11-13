@@ -1,41 +1,45 @@
 <template>
     <div :class="$style.index">
-        <NuxtLink
-            :to="{
-                path: '/board',
-                query: {
-                    category: props.board.slug,
-                },
-            }"
-        >
-            <div :class="$style.head">
-                <div :class="$style.title">{{ props.board.title }} 게시판</div>
-                <div :class="$style.icon" />
-            </div>
-        </NuxtLink>
-
-        <div :class="$style.inner">
-            <div
-                v-for="(content, index) in props.board.post"
-                :key="'content-' + index"
-                @click="goPost(content, props.board.slug)"
-                :class="$style.content"
+        <template v-if="props.board != null">
+            <NuxtLink
+                :to="{
+                    path: '/board',
+                    query: {
+                        category: props.board.slug,
+                    },
+                }"
             >
-                <div :class="$style.left">
+                <div :class="$style.head">
                     <div :class="$style.title">
-                        {{ content.title }}
+                        {{ props.board.title }} 게시판
                     </div>
-                    <!-- <div :class="$style.feedback">
+                    <div :class="$style.icon" />
+                </div>
+            </NuxtLink>
+
+            <div :class="$style.inner">
+                <div
+                    v-for="(content, index) in props.board.post"
+                    :key="'content-' + index"
+                    @click="goPost(content, props.board.slug)"
+                    :class="$style.content"
+                >
+                    <div :class="$style.left">
+                        <div :class="$style.title">
+                            {{ content.title }}
+                        </div>
+                        <!-- <div :class="$style.feedback">
                         
                     </div> -->
-                </div>
-                <div :class="$style.right">
-                    <div :class="$style.time">
-                        {{ timeAgo(content.written_time) }}
+                    </div>
+                    <div :class="$style.right">
+                        <div :class="$style.time">
+                            {{ timeAgo(content.written_time) }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     </div>
 </template>
 
@@ -44,7 +48,7 @@ import { timeAgo } from "~/utils/string";
 import type { BoardList, PostItem } from "~/structure/type";
 
 const props = defineProps<{
-    board: BoardList;
+    board?: BoardList | null;
 }>();
 
 const getBoardTitle = (board: BoardList) => {
@@ -115,7 +119,7 @@ const goPost = (content: PostItem, category: string) => {
         padding-inline: 8px;
 
         > .content {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
 
             display: flex;
 
