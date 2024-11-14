@@ -20,8 +20,9 @@ export function timeAgo(time: Date): string {
     const kstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
 
     const now = new Date();
+    const kstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
 
-    const diffInMs = now.getTime() - kstDate.getTime();
+    const diffInMs = kstNow.getTime() - kstDate.getTime();
     const diffInSeconds = Math.floor(diffInMs / 1000);
 
     if (diffInSeconds < 60) {
