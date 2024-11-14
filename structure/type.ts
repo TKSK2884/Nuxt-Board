@@ -63,3 +63,13 @@ export interface PostItem {
     written_time: Date;
     content: string;
 }
+
+export interface commentItem {
+    id: number;
+    post_id: number;
+    user_id: number;
+    user: number;
+    content: string;
+    parent_comment_id?: number | null;
+    created_at: Date;
+}
