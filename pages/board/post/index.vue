@@ -84,7 +84,34 @@
                                 </div>
                             </div>
                             <div :class="$style.list">
-                                <div :class="$style.item"></div>
+                                <CommentItem
+                                    v-for="(item, index) in commentList"
+                                    :key="'comment-' + index"
+                                    :comment="item"
+                                    :isEditing="item.id === commentToUpdateId"
+                                    :isEditor="
+                                        item.user_id === authStore.userState?.id
+                                    "
+                                    @toggleEdit="toggleCommentEditMode(item.id)"
+                                    @update="updateComment"
+                                />
+
+                                <el-input
+                                    v-model="comment"
+                                    :rows="2"
+                                    type="textarea"
+                                    :class="$style.input"
+                                    :placeholder="getCommentPlaceholder()"
+                                    :disabled="!isLogin()"
+                                />
+                                <div :class="$style.write">
+                                    <el-button
+                                        v-if="isLogin()"
+                                        @click="addComment()"
+                                    >
+                                        댓글 작성
+                                    </el-button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -104,7 +131,12 @@
 
 <script setup lang="ts">
 import DOMPurify from "dompurify";
-import type { APIResponse, Post, PostItem } from "~/structure/type";
+import type {
+    APIResponse,
+    Post,
+    PostItem,
+    commentItem,
+} from "~/structure/type";
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -117,6 +149,10 @@ const loadingStore = useLoadingStore();
 const id: Ref<number> = ref(0);
 const postItem: Ref<PostItem | null> = ref(null);
 const editMode: Ref<boolean> = ref(false);
+
+const commentList: Ref<commentItem[] | null> = ref(null);
+const comment: Ref<string> = ref("");
+const commentToUpdateId: Ref<number | null> = ref(null);
 
 const getPostItem = async () => {
     loadingStore.globalLoading = true;
@@ -134,7 +170,7 @@ const getPostItem = async () => {
     } catch (error) {
         ElMessage({ message: "존재하지 않는 글입니다.", type: "error" });
 
-        navigateTo("/");
+        await navigateTo("/");
         return;
     } finally {
         loadingStore.globalLoading = false;
@@ -149,6 +185,16 @@ const sanitizeContent = (content: string): string => {
     if (postItem.value == null) return "";
 
     return DOMPurify.sanitize(content);
+};
+
+const isLogin = (): boolean => {
+    return authStore.userState != null;
+};
+
+const getCommentPlaceholder = (): string => {
+    return isLogin()
+        ? "댓글을 입력해주세요"
+        : "댓글을 입력하려면 로그인 해주세요";
 };
 
 const addLike = async () => {
@@ -229,7 +275,63 @@ const addDisLike = async () => {
     }
 };
 
-onMounted(() => {
+const getComments = async () => {
+    if (postItem.value == null) return;
+
+    loadingStore.globalLoading = true;
+
+    try {
+        const result: APIResponse<commentItem[]> = await $fetch("/comments", {
+            baseURL: config.public.apiBase,
+            method: "GET",
+            query: {
+                postId: postItem.value.id,
+            },
+        });
+
+        commentList.value = result.data;
+    } catch {
+        return;
+    } finally {
+        loadingStore.globalLoading = false;
+    }
+};
+
+const addComment = async () => {
+    if (postItem.value == null) return;
+    if (loadingStore.globalLoading) return;
+
+    if (authStore.userState == null) {
+        ElMessage({ message: "로그인이 필요합니다.", type: "error" });
+
+        return;
+    }
+
+    loadingStore.globalLoading = true;
+
+    try {
+        await $fetch("/comment/create", {
+            baseURL: config.public.apiBase,
+            method: "POST",
+            body: {
+                postId: postItem.value.id,
+                userId: authStore.userState.id,
+                parentCommentId: null,
+                comment: comment.value,
+            },
+        });
+    } catch {
+        return;
+    } finally {
+        loadingStore.globalLoading = false;
+    }
+
+    ElMessage({ message: "댓글이 추가되었습니다.", type: "success" });
+
+    await getComments();
+};
+
+onMounted(async () => {
     if (typeof route.query.id === "string") {
         id.value = Number(route.query.id);
     }
@@ -238,7 +340,8 @@ onMounted(() => {
         category.value = route.query.category;
     }
 
-    getPostItem();
+    await getPostItem();
+    await getComments();
 });
 
 const isUpdate = (): boolean => {
@@ -251,6 +354,36 @@ const isUpdate = (): boolean => {
 
 const toggleEditMode = () => {
     editMode.value = !editMode.value;
+};
+
+const toggleCommentEditMode = (commentId: number) => {
+    commentToUpdateId.value =
+        commentToUpdateId.value === commentId ? null : commentId;
+};
+
+const updateComment = async (updated: string) => {
+    loadingStore.globalLoading = true;
+
+    try {
+        await $fetch("/comment/update", {
+            baseURL: config.public.apiBase,
+            method: "POST",
+            body: {
+                commentId: commentToUpdateId.value,
+                content: updated,
+            },
+        });
+    } catch (error) {
+        return;
+    } finally {
+        loadingStore.globalLoading = false;
+    }
+
+    commentToUpdateId.value = null;
+
+    ElMessage({ message: "댓글이 수정되었습니다.", type: "success" });
+
+    await getComments();
 };
 </script>
 
@@ -313,13 +446,6 @@ const toggleEditMode = () => {
 
         > .content {
             padding: 10px;
-
-            @for $i from 1 through 8 {
-                [data-indent="#{$i}"] {
-                    $val: $i * 30px;
-                    padding-left: $val;
-                }
-            }
         }
 
         > .footer {
@@ -333,13 +459,25 @@ const toggleEditMode = () => {
 
             > .comment {
                 > .title {
-                    display: flex;
+                    margin-top: 10px;
 
+                    display: flex;
                     align-items: center;
 
                     > .text {
                         font-size: 20px;
                         flex: 1;
+                    }
+                }
+
+                > .list {
+                    margin-top: 20px;
+
+                    > .write {
+                        margin-top: 10px;
+
+                        display: flex;
+                        justify-content: flex-end;
                     }
                 }
             }
