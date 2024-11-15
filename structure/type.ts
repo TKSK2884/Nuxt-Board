@@ -64,7 +64,7 @@ export interface PostItem {
     content: string;
 }
 
-export interface commentItem {
+export interface CommentItem {
     id: number;
     post_id: number;
     user_id: number;
@@ -72,4 +72,5 @@ export interface commentItem {
     content: string;
     parent_comment_id?: number | null;
     created_at: Date;
+    replies: CommentItem[];
 }
