@@ -8,11 +8,14 @@
                             <div :class="$style.logo" />
                         </NuxtLink>
                         <div :class="$style.search">
-                            <el-input
-                                v-model="search"
-                                :prefix-icon="Search"
-                                placeholder="찾기"
-                            />
+                            <el-input v-model="search" placeholder="검색">
+                                <template #append>
+                                    <el-button
+                                        @click="searchPost"
+                                        :icon="ElIconSearch"
+                                    />
+                                </template>
+                            </el-input>
                         </div>
                     </div>
                     <div :class="$style.right">
@@ -99,6 +102,10 @@ const goCreate = () => {
     navigateTo("/board/create");
 };
 
+const searchPost = () => {
+    ElMessage({ message: "현재 준비중입니다.", type: "info" });
+};
+
 const logout = () => {
     authStore.logout();
 };
@@ -162,7 +169,6 @@ watch(
     > .inner {
         width: 100%;
         height: 100%;
-        min-height: 100vh;
 
         position: relative;
 
@@ -246,21 +252,26 @@ watch(
             width: 100%;
             height: 100%;
 
+            min-height: calc(100dvh - 52px);
+
             background-color: #eee;
 
             > .contents {
                 max-width: 1024px;
-                height: 100dvh;
+                height: 100%;
 
                 background-color: white;
 
-                padding-inline: 20px;
-                padding-top: 20px;
+                padding: 20px;
                 margin-inline: auto;
 
                 border-left: 1px solid;
                 border-right: 1px solid;
+                border-bottom: 1px solid;
                 border-color: #bbb;
+
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
 
                 > .boardInfo {
                     > .inner {
