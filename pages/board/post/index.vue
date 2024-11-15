@@ -57,14 +57,27 @@
 
                     <div :class="$style.footer">
                         <div :class="$style.likes">
-                            <el-button @click="addLike" :class="$style.button">
-                                추천 {{ postItem.likes }}
+                            <el-button
+                                @click="addLike"
+                                :icon="ElIconMedal"
+                                type="primary"
+                                :class="$style.button"
+                            >
+                                <div>추천</div>
+                                <div>
+                                    {{ postItem.likes }}
+                                </div>
                             </el-button>
                             <el-button
                                 @click="addDisLike"
                                 :class="$style.button"
+                                :icon="ElIconRemove"
+                                type="danger"
                             >
-                                비추천 {{ postItem.dislikes }}
+                                <div>비추천</div>
+                                <div>
+                                    {{ postItem.dislikes }}
+                                </div>
                             </el-button>
                         </div>
 
