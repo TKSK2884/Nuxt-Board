@@ -8,6 +8,29 @@
                             <div :class="$style.text">
                                 {{ postItem.title }}
                             </div>
+                            <div v-if="isWriter()" :class="$style.buttons">
+                                <el-tooltip
+                                    content="글 수정"
+                                    placement="bottom"
+                                >
+                                    <el-button
+                                        @click="toggleEditMode"
+                                        type="primary"
+                                        :icon="ElIconEdit"
+                                    />
+                                </el-tooltip>
+
+                                <el-tooltip
+                                    content="글 삭제"
+                                    placement="bottom"
+                                >
+                                    <el-button
+                                        @click="deletePost"
+                                        type="danger"
+                                        :icon="ElIconDelete"
+                                    />
+                                </el-tooltip>
+                            </div>
                         </div>
                         <div :class="$style.desc">
                             <div :class="$style.left">
@@ -85,12 +108,6 @@
                             <div :class="$style.title">
                                 <div :class="$style.text">댓글</div>
                                 <div :class="$style.write">
-                                    <el-button
-                                        v-if="isUpdate()"
-                                        @click="toggleEditMode"
-                                    >
-                                        글 수정
-                                    </el-button>
                                     <el-button @click="goWrite"
                                         >글 쓰기</el-button
                                     >
@@ -101,12 +118,19 @@
                                     v-for="(item, index) in commentList"
                                     :key="'comment-' + index"
                                     :comment="item"
-                                    :isEditing="item.id === commentToUpdateId"
-                                    :isEditor="
+                                    :is-editing="item.id === commentToUpdateId"
+                                    :is-editor="
                                         item.user_id === authStore.userState?.id
                                     "
-                                    @toggleEdit="toggleCommentEditMode(item.id)"
+                                    :is-reply="item.id === replyToCommentId"
+                                    :comment-to-update-id="commentToUpdateId"
+                                    :reply-to-comment-id="replyToCommentId"
+                                    :replies="item.replies"
+                                    @toggleEdit="toggleCommentEditMode"
                                     @update="updateComment"
+                                    @delete="deleteComment"
+                                    @toggleReply="toggleReplyMode(item.id)"
+                                    @reply="addReplyComment"
                                 />
 
                                 <el-input
@@ -148,7 +172,7 @@ import type {
     APIResponse,
     Post,
     PostItem,
-    commentItem,
+    CommentItem,
 } from "~/structure/type";
 
 const route = useRoute();
@@ -163,9 +187,10 @@ const id: Ref<number> = ref(0);
 const postItem: Ref<PostItem | null> = ref(null);
 const editMode: Ref<boolean> = ref(false);
 
-const commentList: Ref<commentItem[] | null> = ref(null);
+const commentList: Ref<CommentItem[] | null> = ref(null);
 const comment: Ref<string> = ref("");
 const commentToUpdateId: Ref<number | null> = ref(null);
+const replyToCommentId: Ref<number | null> = ref(null);
 
 const getPostItem = async () => {
     loadingStore.globalLoading = true;
@@ -206,8 +231,8 @@ const isLogin = (): boolean => {
 
 const getCommentPlaceholder = (): string => {
     return isLogin()
-        ? "댓글을 입력해주세요"
-        : "댓글을 입력하려면 로그인 해주세요";
+        ? "댓글을 입력해 주세요"
+        : "댓글을 입력하려면 로그인해 주세요";
 };
 
 const addLike = async () => {
@@ -294,7 +319,7 @@ const getComments = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        const result: APIResponse<commentItem[]> = await $fetch("/comments", {
+        const result: APIResponse<CommentItem[]> = await $fetch("/comments", {
             baseURL: config.public.apiBase,
             method: "GET",
             query: {
@@ -329,17 +354,22 @@ const addComment = async () => {
             body: {
                 postId: postItem.value.id,
                 userId: authStore.userState.id,
-                parentCommentId: null,
                 comment: comment.value,
             },
         });
     } catch {
+        ElMessage({
+            message: "댓글 추가에 실패했습니다. 다시 시도해 주세요.",
+            type: "error",
+        });
         return;
     } finally {
         loadingStore.globalLoading = false;
     }
 
     ElMessage({ message: "댓글이 추가되었습니다.", type: "success" });
+
+    comment.value = "";
 
     await getComments();
 };
@@ -357,7 +387,7 @@ onMounted(async () => {
     await getComments();
 });
 
-const isUpdate = (): boolean => {
+const isWriter = (): boolean => {
     if (authStore.userState == null || postItem.value == null) {
         return false;
     }
@@ -369,12 +399,37 @@ const toggleEditMode = () => {
     editMode.value = !editMode.value;
 };
 
+const deletePost = async () => {
+    if (postItem.value == null) return;
+    if (loadingStore.globalLoading) return;
+
+    loadingStore.globalLoading = true;
+
+    try {
+        await $fetch("/board/delete", {
+            baseURL: config.public.apiBase,
+            method: "POST",
+            body: {
+                postId: postItem.value?.id,
+            },
+        });
+    } catch (error) {
+        return;
+    } finally {
+        loadingStore.globalLoading = false;
+    }
+
+    await navigateTo("/");
+};
+
 const toggleCommentEditMode = (commentId: number) => {
     commentToUpdateId.value =
         commentToUpdateId.value === commentId ? null : commentId;
 };
 
 const updateComment = async (updated: string) => {
+    if (loadingStore.globalLoading) return;
+
     loadingStore.globalLoading = true;
 
     try {
@@ -397,6 +452,80 @@ const updateComment = async (updated: string) => {
     ElMessage({ message: "댓글이 수정되었습니다.", type: "success" });
 
     await getComments();
+};
+
+const deleteComment = async (commentId: number) => {
+    if (loadingStore.globalLoading) return;
+    if (commentList.value == null) return;
+
+    loadingStore.globalLoading = true;
+
+    try {
+        await $fetch("/comment/delete", {
+            baseURL: config.public.apiBase,
+            method: "POST",
+            body: {
+                commentId: commentId,
+            },
+        });
+
+        await getComments();
+
+        ElMessage({ message: "댓글이 삭제되었습니다.", type: "success" });
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+    } finally {
+        loadingStore.globalLoading = false;
+    }
+};
+
+const toggleReplyMode = (commentId: number) => {
+    replyToCommentId.value =
+        replyToCommentId.value === commentId ? null : commentId;
+};
+
+const addReplyComment = async (
+    content: string,
+    parentId: number | null = null
+) => {
+    if (!content.trim()) {
+        ElMessage({ message: "답글 내용을 입력해 주세요.", type: "warning" });
+        return;
+    }
+
+    if (postItem.value == null || loadingStore.globalLoading) return;
+
+    if (authStore.userState == null) {
+        ElMessage({ message: "로그인이 필요합니다.", type: "error" });
+        return;
+    }
+
+    try {
+        await $fetch("/comment/create", {
+            baseURL: config.public.apiBase,
+            method: "POST",
+            body: {
+                postId: postItem.value.id,
+                userId: authStore.userState.id,
+                parentCommentId: parentId,
+                comment: content,
+            },
+        });
+
+        ElMessage({ message: "답글이 추가되었습니다.", type: "success" });
+
+        replyToCommentId.value = null;
+
+        await getComments();
+    } catch (error) {
+        console.error("Error adding reply:", error);
+        ElMessage({
+            message: "답글 추가에 실패했습니다. 다시 시도해 주세요.",
+            type: "error",
+        });
+    } finally {
+        loadingStore.globalLoading = false;
+    }
 };
 </script>
 
@@ -423,6 +552,10 @@ const updateComment = async (updated: string) => {
 
                 border-bottom: 1px solid;
                 border-color: #bbb;
+
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
             }
 
             > .desc {
@@ -458,6 +591,8 @@ const updateComment = async (updated: string) => {
         }
 
         > .content {
+            min-height: 400px;
+
             padding: 10px;
         }
 
@@ -468,6 +603,12 @@ const updateComment = async (updated: string) => {
                 align-items: center;
 
                 gap: 10px;
+
+                > .button {
+                    > span {
+                        gap: 4px;
+                    }
+                }
             }
 
             > .comment {
