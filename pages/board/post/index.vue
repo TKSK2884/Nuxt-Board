@@ -106,7 +106,10 @@
 
                         <div :class="$style.comment">
                             <div :class="$style.title">
-                                <div :class="$style.text">댓글</div>
+                                <div :class="$style.text">
+                                    <span>댓글:</span>
+                                    <span> [{{ getCommentLength() }}] </span>
+                                </div>
                                 <div :class="$style.write">
                                     <el-button @click="goWrite"
                                         >글 쓰기</el-button
@@ -233,6 +236,20 @@ const getCommentPlaceholder = (): string => {
     return isLogin()
         ? "댓글을 입력해 주세요"
         : "댓글을 입력하려면 로그인해 주세요";
+};
+
+const getCommentLength = (): number => {
+    if (commentList.value == null) return 0;
+
+    return commentList.value.length + countReplies();
+};
+
+const countReplies = (): number => {
+    if (commentList.value == null) return 0;
+
+    return commentList.value.reduce((total, comment) => {
+        return total + (comment.replies ? comment.replies.length : 0);
+    }, 0);
 };
 
 const addLike = async () => {
@@ -545,6 +562,7 @@ const addReplyComment = async (
 
             > .title {
                 font-size: 18px;
+                font-weight: bold;
 
                 background-color: #eee;
 
@@ -621,6 +639,10 @@ const addReplyComment = async (
                     > .text {
                         font-size: 20px;
                         flex: 1;
+
+                        > span:first-child {
+                            margin-right: 2px;
+                        }
                     }
                 }
 
