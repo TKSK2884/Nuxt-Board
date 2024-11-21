@@ -4,7 +4,7 @@ import type { APIResponse, UserInfo } from "~/structure/type";
 interface UserState {
     id: number;
     nickname: string;
-    isLoggedIn: boolean;
+    email: string;
 }
 
 export const useAuthStore = defineStore("user", () => {
@@ -32,7 +32,7 @@ export const useAuthStore = defineStore("user", () => {
             userState.value = {
                 id: result.data.id,
                 nickname: result.data.nickname,
-                isLoggedIn: true,
+                email: result.data.email,
             };
         } catch (error) {
             userState.value = null;
@@ -41,8 +41,8 @@ export const useAuthStore = defineStore("user", () => {
         loadingStore.globalLoading = false;
     };
 
-    const login = (id: number, userNickname: string) => {
-        userState.value = { id: id, nickname: userNickname, isLoggedIn: true };
+    const login = (id: number, userNickname: string, email: string) => {
+        userState.value = { id: id, nickname: userNickname, email: email };
     };
 
     const logout = async () => {
