@@ -27,6 +27,9 @@
                                 <div :class="$style.user" />
                                 <template #dropdown>
                                     <el-dropdown-menu>
+                                        <el-dropdown-item @click="goMypage()">
+                                            마이페이지
+                                        </el-dropdown-item>
                                         <el-dropdown-item @click="goCreate()">
                                             게시판 생성
                                         </el-dropdown-item>
@@ -98,6 +101,10 @@ const isLogin = (): boolean => {
     return authStore.userState != null;
 };
 
+const goMypage = () => {
+    navigateTo("/my");
+};
+
 const goCreate = () => {
     navigateTo("/board/create");
 };
@@ -108,6 +115,8 @@ const searchPost = () => {
 
 const logout = () => {
     authStore.logout();
+
+    navigateTo("/");
 };
 
 onMounted(async () => {
@@ -298,9 +307,6 @@ watch(
                         }
                     }
                 }
-            }
-
-            > banner {
             }
         }
 
