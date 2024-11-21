@@ -68,7 +68,11 @@ const tryLogin = async () => {
         return;
     }
 
-    useAuthStore().login(result.data.id, result.data.nickname);
+    useAuthStore().login(
+        result.data.id,
+        result.data.nickname,
+        result.data.email
+    );
 
     navigateTo("/");
 };

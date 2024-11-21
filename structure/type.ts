@@ -9,6 +9,7 @@ export interface APIResponse<T> {
 export interface UserInfo {
     id: number;
     nickname: string;
+    email: string;
 }
 
 export interface BoardList {
