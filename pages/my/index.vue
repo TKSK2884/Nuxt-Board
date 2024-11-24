@@ -35,11 +35,10 @@ const nickname: Ref<string> = ref("");
 const email: Ref<string> = ref("");
 
 onMounted(async () => {
-    if (authStore.userState == null) {
-        await authStore.checkAuth();
-    }
+    await authStore.checkAuth();
 
     if (authStore.userState == null) {
+        ElMessage({ message: "로그인이 필요합니다.", type: "warning" });
         navigateTo("/");
         return;
     }
