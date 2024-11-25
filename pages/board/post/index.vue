@@ -199,7 +199,7 @@ const getPostItem = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        const result: APIResponse<Post> = await $fetch("/read", {
+        const result: APIResponse<Post> = await $fetch("/post", {
             baseURL: config.public.apiBase,
             method: "GET",
             query: {
@@ -267,7 +267,7 @@ const addLike = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        const result: APIResponse<null> = await $fetch("/like", {
+        const result: APIResponse<null> = await $fetch("/post/like", {
             baseURL: config.public.apiBase,
             method: "POST",
             body: {
@@ -306,7 +306,7 @@ const addDisLike = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        const result: APIResponse<null> = await $fetch("/dislike", {
+        const result: APIResponse<null> = await $fetch("/post/dislike", {
             baseURL: config.public.apiBase,
             method: "POST",
             body: {
@@ -336,7 +336,7 @@ const getComments = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        const result: APIResponse<CommentItem[]> = await $fetch("/comments", {
+        const result: APIResponse<CommentItem[]> = await $fetch("/comment", {
             baseURL: config.public.apiBase,
             method: "GET",
             query: {
@@ -365,7 +365,7 @@ const addComment = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        await $fetch("/comment/create", {
+        await $fetch("/comment", {
             baseURL: config.public.apiBase,
             method: "POST",
             body: {
@@ -423,9 +423,9 @@ const deletePost = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        await $fetch("/board/delete", {
+        await $fetch("/post/delete", {
             baseURL: config.public.apiBase,
-            method: "POST",
+            method: "DELETE",
             body: {
                 postId: postItem.value?.id,
             },
@@ -450,9 +450,9 @@ const updateComment = async (updated: string) => {
     loadingStore.globalLoading = true;
 
     try {
-        await $fetch("/comment/update", {
+        await $fetch("/comment", {
             baseURL: config.public.apiBase,
-            method: "POST",
+            method: "PATCH",
             body: {
                 commentId: commentToUpdateId.value,
                 content: updated,
@@ -478,9 +478,9 @@ const deleteComment = async (commentId: number) => {
     loadingStore.globalLoading = true;
 
     try {
-        await $fetch("/comment/delete", {
+        await $fetch("/comment", {
             baseURL: config.public.apiBase,
-            method: "POST",
+            method: "DELETE",
             body: {
                 commentId: commentId,
             },
@@ -518,7 +518,7 @@ const addReplyComment = async (
     }
 
     try {
-        await $fetch("/comment/create", {
+        await $fetch("/comment", {
             baseURL: config.public.apiBase,
             method: "POST",
             body: {
@@ -588,9 +588,10 @@ const addReplyComment = async (
                 }
 
                 > .right {
-                    display: flex;
                     font-size: 14px;
                     line-height: 18px;
+
+                    display: flex;
 
                     > div > span.head {
                         font-weight: 600;

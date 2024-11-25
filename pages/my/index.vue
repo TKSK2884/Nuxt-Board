@@ -61,7 +61,7 @@ const updateUserInfo = async () => {
     if (authStore.userState == null) return;
 
     try {
-        const result: APIResponse<null> = await $fetch("/member/update", {
+        const result: APIResponse<null> = await $fetch("/member", {
             baseURL: config.public.apiBase,
             method: "PATCH",
             body: {
