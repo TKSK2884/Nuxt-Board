@@ -1,75 +1,47 @@
-# Nuxt 3 Minimal Starter
+# 심리테스트 (PsychologicalTest)
+**게시판 프로젝트**는 게시판의 CRUD기능을 구현하는 프로젝트입니다.
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## 📄 프로젝트 설명
+- 게시판의 기능 전반을 구현했습니다.
+- 게시글 작성, 수정, 삭제, 댓글쓰기, 답글쓰기등이 가능합니다.
+## 🚀 프로젝트 데모
+- [게시판 데모 페이지](https://nuxt-board.highground.kr/)
 
-## Setup
+<img src="https://github.com/user-attachments/assets/5e5d8c3c-17db-4be5-9998-fcd4f973b020" width="800px" height="480px">
 
-Make sure to install the dependencies:
+## 🔧 사용 기술 스택
+Nuxt, TypeScript, SCSS
 
-```bash
-# npm
+## 📌 주요 기능
+- **게시글**: 게시글 작성, 수정, 삭제등이 가능합니다.
+- **댓글 기능**: 게시글에 댓글을 작성하거나 수정, 삭제가 가능합니다.
+- **게시판 생성기능**: 새로운 게시판을 생성할 수 있습니다.
+- **회원가입 및 로그인 기능**
+- **마이페이지**: 사용자의 닉네임, 이메일 정보를 수정할 수 있습니다.
+## 설치 및 실행
+
+### 사전 요구 사항
+- **Node.js** (v14 이상)
+- **npm** 또는 **yarn**
+
+### 설치
+
+1. 저장소를 클론합니다.
+```
+git clone https://github.com/TKSK2884/Nuxt-Board.git
+```
+
+2. 의존성을 설치합니다.
+```
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
+# 또는
 yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+3. 개발 서버를 실행합니다.
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run serve
+# 또는
+yarn serve
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+4. 브라우저에서 http://localhost:3000으로 접속하여 확인 할 수 있습니다.
