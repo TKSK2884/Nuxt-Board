@@ -40,6 +40,8 @@
 </template>
 
 <script setup lang="ts">
+import type { APIResponse } from "~/structure/type";
+
 const config = useRuntimeConfig();
 
 const id: Ref<string> = ref("");
@@ -49,7 +51,7 @@ const email: Ref<string> = ref("");
 const nickname: Ref<string> = ref("");
 
 const tryJoin = async () => {
-    const result: any = await $fetch("/member/join", {
+    const result: APIResponse<null> = await $fetch("/member", {
         baseURL: config.public.apiBase,
         method: "POST",
         body: {

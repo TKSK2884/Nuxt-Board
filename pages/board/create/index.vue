@@ -56,7 +56,7 @@ const createBoard = async () => {
     loadingStore.globalLoading = true;
 
     try {
-        await $fetch("/board/create", {
+        await $fetch("/board", {
             baseURL: config.public.apiBase,
             method: "POST",
             body: {

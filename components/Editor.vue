@@ -92,9 +92,9 @@ const writeContent = async () => {
 
     try {
         if (props.editMode) {
-            await $fetch("/update", {
+            await $fetch("/post", {
                 baseURL: config.public.apiBase,
-                method: "POST",
+                method: "PUT",
                 body: {
                     id: props.postItem?.id,
                     title: title.value,
@@ -102,7 +102,7 @@ const writeContent = async () => {
                 },
             });
         } else {
-            await $fetch("/write", {
+            await $fetch("/post", {
                 baseURL: config.public.apiBase,
                 method: "POST",
                 body: {

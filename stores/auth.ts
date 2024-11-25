@@ -17,7 +17,7 @@ export const useAuthStore = defineStore("user", () => {
         loadingStore.globalLoading = true;
 
         try {
-            const result: APIResponse<UserInfo> = await $fetch("/member/info", {
+            const result: APIResponse<UserInfo> = await $fetch("/member", {
                 baseURL: config.public.apiBase,
                 method: "GET",
                 credentials: "include",
@@ -51,7 +51,7 @@ export const useAuthStore = defineStore("user", () => {
         try {
             await $fetch("/member/logout", {
                 baseURL: config.public.apiBase,
-                method: "POST",
+                method: "DELETE",
                 credentials: "include",
             });
         } catch (error) {
