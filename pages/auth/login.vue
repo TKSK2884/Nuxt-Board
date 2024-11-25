@@ -62,9 +62,6 @@ const tryLogin = async () => {
     });
 
     if (!result.success) {
-        const errorCode = result.errorCode;
-        alert(errorCode);
-
         return;
     }
 
