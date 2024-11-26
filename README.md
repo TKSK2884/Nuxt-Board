@@ -7,7 +7,7 @@
 ## 🚀 프로젝트 데모
 - [게시판 데모 페이지](https://nuxt-board.highground.kr/)
 
-<img src="https://github.com/user-attachments/assets/5e5d8c3c-17db-4be5-9998-fcd4f973b020" width="800px" height="480px">
+<img src="https://github.com/user-attachments/assets/21aff0c8-9bdd-4dc2-8254-170b0abad431" width="800px" height="480px">
 
 ## 🔧 사용 기술 스택
 Nuxt, TypeScript, SCSS
