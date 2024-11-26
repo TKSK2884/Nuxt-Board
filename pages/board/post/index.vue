@@ -375,7 +375,7 @@ const addComment = async () => {
             body: {
                 postId: postItem.value.id,
                 userId: authStore.userState.id,
-                comment: comment.value,
+                content: comment.value,
             },
         });
     } catch {
@@ -529,7 +529,7 @@ const addReplyComment = async (
                 postId: postItem.value.id,
                 userId: authStore.userState.id,
                 parentCommentId: parentId,
-                comment: content,
+                content: content,
             },
         });
 
