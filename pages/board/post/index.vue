@@ -111,9 +111,13 @@
                                     <span> [{{ getCommentLength() }}] </span>
                                 </div>
                                 <div :class="$style.write">
-                                    <el-button @click="goWrite"
-                                        >글 쓰기</el-button
+                                    <el-button
+                                        @click="goWrite"
+                                        :icon="ElIconEdit"
+                                        type="primary"
                                     >
+                                        글쓰기
+                                    </el-button>
                                 </div>
                             </div>
                             <div :class="$style.list">
@@ -371,7 +375,7 @@ const addComment = async () => {
             body: {
                 postId: postItem.value.id,
                 userId: authStore.userState.id,
-                comment: comment.value,
+                content: comment.value,
             },
         });
     } catch {
@@ -525,7 +529,7 @@ const addReplyComment = async (
                 postId: postItem.value.id,
                 userId: authStore.userState.id,
                 parentCommentId: parentId,
-                comment: content,
+                content: content,
             },
         });
 

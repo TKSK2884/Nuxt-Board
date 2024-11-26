@@ -7,16 +7,6 @@
                         <NuxtLink to="/">
                             <div :class="$style.logo" />
                         </NuxtLink>
-                        <div :class="$style.search">
-                            <el-input v-model="search" placeholder="검색">
-                                <template #append>
-                                    <el-button
-                                        @click="searchPost"
-                                        :icon="ElIconSearch"
-                                    />
-                                </template>
-                            </el-input>
-                        </div>
                     </div>
                     <div :class="$style.right">
                         <div :class="$style.nickname">
@@ -41,7 +31,13 @@
                             </el-dropdown>
                         </template>
                         <template v-else>
-                            <div @click="goLogin" :class="$style.user" />
+                            <el-button
+                                @click="goLogin"
+                                :class="$style.login"
+                                type="primary"
+                            >
+                                <span :class="$style.in" /> 로그인
+                            </el-button>
                         </template>
                     </div>
                 </div>
@@ -54,7 +50,7 @@
                     >
                         <div :class="$style.inner">
                             <div @click="goBoard" :class="$style.title">
-                                {{ boardInfo.title }} 게시판
+                                {{ boardInfo.title }}
                             </div>
                             <div :class="$style.desc">
                                 {{ boardInfo.description }}
@@ -74,7 +70,6 @@
 </template>
 
 <script setup lang="ts">
-import { Search } from "@element-plus/icons-vue";
 import { useAuthStore } from "~/stores/auth";
 import { useLoadingStore } from "~/stores/loading";
 import type { APIResponse, BoardInfo } from "~/structure/type";
@@ -85,8 +80,6 @@ const authStore = useAuthStore();
 const route = useRoute();
 const category = ref("");
 const boardInfo: Ref<BoardInfo | null> = ref(null);
-
-const search: Ref<string> = ref("");
 
 const goLogin = () => {
     if (authStore.userState != null) {
@@ -107,10 +100,6 @@ const goMypage = () => {
 
 const goCreate = () => {
     navigateTo("/board/create");
-};
-
-const searchPost = () => {
-    ElMessage({ message: "현재 준비중입니다.", type: "info" });
 };
 
 const logout = () => {
@@ -253,6 +242,19 @@ watch(
 
                         @include icon-image("user-solid-white.svg");
                     }
+
+                    > .login {
+                        > span {
+                            > .in {
+                                width: 16px;
+                                height: 16px;
+
+                                margin-right: 4px;
+
+                                @include icon-image("login-icon.png");
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -261,26 +263,12 @@ watch(
             width: 100%;
             height: 100%;
 
-            min-height: calc(100dvh - 52px);
-
-            background-color: #eee;
-
             > .contents {
                 max-width: 1024px;
                 height: 100%;
 
-                background-color: white;
-
                 padding: 20px;
                 margin-inline: auto;
-
-                border-left: 1px solid;
-                border-right: 1px solid;
-                border-bottom: 1px solid;
-                border-color: #bbb;
-
-                border-bottom-left-radius: 10px;
-                border-bottom-right-radius: 10px;
 
                 > .boardInfo {
                     > .inner {
@@ -320,7 +308,7 @@ watch(
 
             background-color: white;
 
-            opacity: 80%;
+            opacity: 90%;
         }
     }
 }

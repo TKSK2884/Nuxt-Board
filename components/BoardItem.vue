@@ -11,9 +11,12 @@
             >
                 <div :class="$style.head">
                     <div :class="$style.title">
-                        {{ props.board.title }} 게시판
+                        {{ props.board.title }}
                     </div>
-                    <div :class="$style.icon" />
+                    <div :class="$style.go">
+                        <span> 더보기 </span>
+                        <div :class="$style.icon" />
+                    </div>
                 </div>
             </NuxtLink>
 
@@ -81,15 +84,16 @@ const goPost = (content: PostItem, category: string) => {
     width: 100%;
     height: 100%;
 
+    padding: 25px;
+
     > a {
-        font-size: 20px;
         text-decoration: none;
 
         color: black;
 
-        padding-bottom: 8px;
-
         display: block;
+
+        margin-bottom: 16px;
 
         outline: 0;
 
@@ -98,19 +102,29 @@ const goPost = (content: PostItem, category: string) => {
             justify-content: space-between;
 
             > .title {
+                font-size: 17px;
+                font-weight: bold;
                 border-bottom: 2px solid #00a495;
             }
 
-            > .icon {
-                width: 20px;
-                height: 20px;
+            > .go {
+                display: flex;
+                align-items: center;
 
-                margin-top: 2px;
+                > span {
+                    font-size: 14px;
+                    line-height: 20px;
+                }
 
-                background-image: url("@/assets/icon/arrow-right-solid.svg");
-                background-size: contain;
-                background-position: center center;
-                background-repeat: no-repeat;
+                > .icon {
+                    width: 16px;
+                    height: 16px;
+
+                    background-image: url("@/assets/icon/arrow-right.png");
+                    background-size: contain;
+                    background-position: center center;
+                    background-repeat: no-repeat;
+                }
             }
         }
     }
@@ -119,7 +133,7 @@ const goPost = (content: PostItem, category: string) => {
         padding-inline: 8px;
 
         > .content {
-            margin-bottom: 6px;
+            margin-bottom: 16px;
 
             display: flex;
 
