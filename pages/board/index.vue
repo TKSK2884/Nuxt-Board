@@ -1,7 +1,9 @@
 <template>
     <div :class="$style.index">
         <div :class="$style.write">
-            <el-button @click="goWrite"> 글쓰기 </el-button>
+            <el-button @click="goWrite" :icon="ElIconEdit" type="primary">
+                글쓰기
+            </el-button>
         </div>
         <div :class="$style.body">
             <div :class="$style.head">

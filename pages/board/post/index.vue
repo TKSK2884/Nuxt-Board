@@ -111,9 +111,13 @@
                                     <span> [{{ getCommentLength() }}] </span>
                                 </div>
                                 <div :class="$style.write">
-                                    <el-button @click="goWrite"
-                                        >글 쓰기</el-button
+                                    <el-button
+                                        @click="goWrite"
+                                        :icon="ElIconEdit"
+                                        type="primary"
                                     >
+                                        글쓰기
+                                    </el-button>
                                 </div>
                             </div>
                             <div :class="$style.list">
