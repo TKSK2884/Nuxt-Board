@@ -74,3 +74,13 @@ export interface CommentItem {
     created_at: Date;
     replies: CommentItem[];
 }
+
+export interface MyPost {
+    id: number;
+    category: string;
+    category_title: string;
+    content: string;
+    title: string;
+    written_time: Date;
+    convert_written_time?: string | null;
+}
