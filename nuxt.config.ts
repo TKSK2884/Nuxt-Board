@@ -6,6 +6,23 @@ export default defineNuxtConfig({
         },
     },
 
+    app: {
+        head: {
+            title: "Nuxt-Board",
+            meta: [
+                {
+                    name: "viewport",
+                    content: "width=device-width, initial-scale=1",
+                },
+                {
+                    name: "description",
+                    content: "This is a Nuxt-Board.",
+                },
+            ],
+            link: [{ rel: "icon", href: "/favicon.ico" }],
+        },
+    },
+
     plugins: [{ src: "~/plugins/ckeditor.client.ts", mode: "client" }],
 
     modules: ["@element-plus/nuxt", "@pinia/nuxt"],
