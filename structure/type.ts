@@ -84,3 +84,8 @@ export interface MyPost {
     written_time: Date;
     convert_written_time?: string | null;
 }
+
+export enum MyPageMode {
+    Edit,
+    Recent,
+}
