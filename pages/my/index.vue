@@ -2,7 +2,11 @@
     <div :class="$style.index">
         <div :class="$style.inner">
             <div :class="$style.head">
-                <el-button @click="mode = 0" :class="$style.button" round>
+                <el-button
+                    @click="mode = MyPageMode.Edit"
+                    :class="$style.button"
+                    round
+                >
                     계정 정보
                 </el-button>
                 <el-button
@@ -14,7 +18,7 @@
                 </el-button>
             </div>
             <div :class="$style.body">
-                <template v-if="mode == 0">
+                <template v-if="mode == MyPageMode.Edit">
                     <div :class="$style.userInfo">
                         <div :class="$style.input">
                             닉네임:
@@ -67,13 +71,14 @@
 </template>
 
 <script setup lang="ts">
+import { MyPageMode } from "~/structure/type";
 import type { APIResponse, MyPost } from "~/structure/type";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
 
-const mode: Ref<number> = ref(0);
+const mode: Ref<number> = ref(MyPageMode.Edit);
 const recentPosts: Ref<MyPost[]> = ref([]);
 
 const nickname: Ref<string> = ref("");
@@ -134,7 +139,7 @@ const updateUserInfo = async () => {
 const changeRecentPost = async () => {
     await getUserRecentPosts();
 
-    mode.value = 1;
+    mode.value = MyPageMode.Recent;
 };
 
 const getUserRecentPosts = async () => {
