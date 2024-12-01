@@ -301,14 +301,13 @@ watch(
         > .loading {
             width: 100%;
             height: 100%;
+            min-height: 100dvh;
 
             position: absolute;
             top: 0px;
             left: 0px;
 
             background-color: white;
-
-            opacity: 90%;
         }
     }
 }
